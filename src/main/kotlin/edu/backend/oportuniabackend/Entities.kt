@@ -29,6 +29,9 @@ data class User(
     @Column(name = "token_expired")
     var tokenExpired: Boolean,
 
+    @OneToMany(mappedBy = "user")
+    var notificationList: List<Notification>,
+
     @ManyToMany
     @JoinTable(
         name = "user_role",
@@ -183,7 +186,32 @@ data class Student(
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
-    var user: User
+    var user: User,
+
+    @OneToMany(mappedBy = "student")
+    var abilitiesList: List<Ability>,
+
+    @OneToMany(mappedBy = "student")
+    var companyReviewList: List<CompanyReview>,
+
+    @OneToMany(mappedBy = "student")
+    var curriculumList: List<Curriculum>,
+
+    @OneToMany(mappedBy = "student")
+    var educationList: List<Education>,
+
+    @OneToMany(mappedBy = "student")
+    var experienceList: List<Experience>,
+
+    @OneToMany(mappedBy = "student")
+    var interviewList: List<Interview>,
+
+    @OneToOne(mappedBy = "student")
+    var streak: Streak,
+
+    @OneToOne(mappedBy = "student")
+    var studentProgress: StudentProgress
+
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -272,6 +300,12 @@ data class Company(
 
     var rating: Float,
 
+    @OneToMany(mappedBy = "company")
+    var companyReviewList: List<CompanyReview>,
+
+    @OneToMany(mappedBy = "company")
+    var experienceList: List<Experience>,
+
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -305,5 +339,516 @@ data class Company(
 
     override fun toString(): String {
         return "Company(id=$id, name='$name', description='$description', type='$type', ubication='$ubication', employees=$employees, websiteUrl='$websiteUrl', rating=$rating)"
+    }
+}
+
+@Entity
+@Table(name = "ability")
+data class Ability(
+    @Id
+    var id: Long,
+
+    var name: String,
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
+    var student: Student
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Ability
+
+        if (id != other.id) return false
+        if (name != other.name) return false
+        if (student != other.student) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + student.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Ability(id=$id, name='$name', student=$student)"
+    }
+}
+
+
+@Entity
+@Table(name = "advices")
+data class Advice(
+    @Id
+    var id: Long,
+
+    var question: String,
+
+    var answer: String,
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Advice
+
+        if (id != other.id) return false
+        if (question != other.question) return false
+        if (answer != other.answer) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + question.hashCode()
+        result = 31 * result + answer.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Advice(id=$id, question='$question', answer='$answer')"
+    }
+}
+
+@Entity
+@Table(name = "companies_reviews")
+data class CompanyReview(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    var rating: Float,
+    var comment: String,
+
+    @Column(name = "created_at")
+    var createdAt: Date,
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
+    var student: Student,
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "id")
+    var company: Company
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as CompanyReview
+
+        if (id != other.id) return false
+        if (rating != other.rating) return false
+        if (comment != other.comment) return false
+        if (createdAt != other.createdAt) return false
+        if (student != other.student) return false
+        if (company != other.company) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + rating.hashCode()
+        result = 31 * result + comment.hashCode()
+        result = 31 * result + createdAt.hashCode()
+        result = 31 * result + student.hashCode()
+        result = 31 * result + company.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "CompanyReview(id=$id, rating=$rating, comment='$comment', createdAt=$createdAt, student=$student, company=$company)"
+    }
+}
+
+@Entity
+@Table(name = "curriculums")
+data class Curriculum(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    @Column(name = "archive_url")
+    var archiveUrl: String,
+
+    var feedback: String,
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
+    var student: Student,
+
+    @OneToOne(mappedBy = "curriculum")
+    var iaAnalysis: IAAnalysis? = null
+
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Curriculum
+
+        if (id != other.id) return false
+        if (archiveUrl != other.archiveUrl) return false
+        if (feedback != other.feedback) return false
+        if (student != other.student) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + archiveUrl.hashCode()
+        result = 31 * result + feedback.hashCode()
+        result = 31 * result + student.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Curriculum(id=$id, archiveUrl='$archiveUrl', feedback='$feedback', student=$student)"
+    }
+}
+
+@Entity
+@Table(name = "education")
+data class Education(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    var name: String,
+    var institution: String,
+    var year: Int,
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
+    var student: Student,
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Education
+
+        if (id != other.id) return false
+        if (year != other.year) return false
+        if (name != other.name) return false
+        if (institution != other.institution) return false
+        if (student != other.student) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + year
+        result = 31 * result + name.hashCode()
+        result = 31 * result + institution.hashCode()
+        result = 31 * result + student.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Education(id=$id, name='$name', institution='$institution', year=$year, student=$student)"
+    }
+}
+
+@Entity
+@Table(name = "experiences")
+data class Experience(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    var role: String,
+    var year: Int,
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
+    var student: Student,
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "id")
+    var company: Company
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Experience
+
+        if (id != other.id) return false
+        if (year != other.year) return false
+        if (role != other.role) return false
+        if (student != other.student) return false
+        if (company != other.company) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + year
+        result = 31 * result + role.hashCode()
+        result = 31 * result + student.hashCode()
+        result = 31 * result + company.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Experience(id=$id, role='$role', year=$year, student=$student, company=$company)"
+    }
+}
+
+@Entity
+@Table(name = "interview")
+data class Interview(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    var date: Date,
+    var result: String,
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
+    var student: Student,
+
+    @OneToOne(mappedBy = "interview")
+    var iaAnalysis: IAAnalysis? = null
+
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Interview
+
+        if (id != other.id) return false
+        if (date != other.date) return false
+        if (result != other.result) return false
+        if (student != other.student) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result1 = id?.hashCode() ?: 0
+        result1 = 31 * result1 + date.hashCode()
+        result1 = 31 * result1 + result.hashCode()
+        result1 = 31 * result1 + student.hashCode()
+        return result1
+    }
+
+    override fun toString(): String {
+        return "Interview(id=$id, date=$date, result='$result', student=$student)"
+    }
+}
+
+
+@Entity
+@Table(name = "IAanalysis")
+data class IAAnalysis(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    var recommendations: String,
+    var score: Float,
+    var date: Date,
+
+    @OneToOne
+    @JoinColumn(name = "interview_id", unique = true, referencedColumnName = "id")
+    var interview: Interview,
+
+    @OneToOne
+    @JoinColumn(name = "curriculum_id", unique = true, referencedColumnName = "id")
+    var curriculum: Curriculum
+) {
+    override fun toString(): String {
+        return "IAAnalysis(id=$id, recommendations='$recommendations', score=$score, date=$date, interview=$interview, curriculum=$curriculum)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as IAAnalysis
+
+        if (id != other.id) return false
+        if (score != other.score) return false
+        if (recommendations != other.recommendations) return false
+        if (date != other.date) return false
+        if (interview != other.interview) return false
+        if (curriculum != other.curriculum) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + score.hashCode()
+        result = 31 * result + recommendations.hashCode()
+        result = 31 * result + date.hashCode()
+        result = 31 * result + interview.hashCode()
+        result = 31 * result + curriculum.hashCode()
+        return result
+    }
+}
+
+@Entity
+@Table(name = "notification")
+data class Notification(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    var type: String,
+    var message: String,
+    var readed: Boolean,
+    var date: Date,
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    var user: User
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Notification
+
+        if (id != other.id) return false
+        if (readed != other.readed) return false
+        if (type != other.type) return false
+        if (message != other.message) return false
+        if (date != other.date) return false
+        if (user != other.user) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + readed.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + message.hashCode()
+        result = 31 * result + date.hashCode()
+        result = 31 * result + user.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Notification(id=$id, type='$type', message='$message', readed=$readed, date=$date, user=$user)"
+    }
+}
+
+@Entity
+@Table(name = "streaks")
+data class Streak(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    var days: Int,
+
+    @Column(name = "last_activity")
+    var lastActivity: Date,
+
+    @Column(name = "best_streak")
+    var bestStreak: Int,
+
+    @OneToOne
+    @JoinColumn(name = "student_id")
+    var student: Student
+
+
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Streak
+
+        if (id != other.id) return false
+        if (days != other.days) return false
+        if (bestStreak != other.bestStreak) return false
+        if (lastActivity != other.lastActivity) return false
+        if (student != other.student) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + days
+        result = 31 * result + bestStreak
+        result = 31 * result + lastActivity.hashCode()
+        result = 31 * result + student.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Streak(id=$id, days=$days, lastActivity=$lastActivity, bestStreak=$bestStreak, student=$student)"
+    }
+}
+
+
+@Entity
+@Table(name = "student_progress")
+data class StudentProgress(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    @Column(name = "total_interviews")
+    var totalInterviews: Int,
+
+    @Column(name = "average_score")
+    var averageScore: Float,
+
+    @Column(name = "uploaded_cl")
+    var uploadedCl: Int,
+
+    @Column(name = "last_activity")
+    var lastActivity: Date,
+
+    @OneToOne
+    @JoinColumn(name = "student_id")
+    var student: Student
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as StudentProgress
+
+        if (id != other.id) return false
+        if (totalInterviews != other.totalInterviews) return false
+        if (averageScore != other.averageScore) return false
+        if (uploadedCl != other.uploadedCl) return false
+        if (lastActivity != other.lastActivity) return false
+        if (student != other.student) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + totalInterviews
+        result = 31 * result + averageScore.hashCode()
+        result = 31 * result + uploadedCl
+        result = 31 * result + lastActivity.hashCode()
+        result = 31 * result + student.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "StudentProgress(id=$id, totalInterviews=$totalInterviews, averageScore=$averageScore, uploadedCl=$uploadedCl, lastActivity=$lastActivity, student=$student)"
     }
 }
