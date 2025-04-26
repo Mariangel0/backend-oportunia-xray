@@ -1,0 +1,3 @@
+INSERT INTO public.users (id, create_date, email, enabled, first_name, last_name, password, token_expired) VALUES (1, '2025-01-01', 'student1@example.com', true, 'Alex', 'Marin', '12345', false);
+INSERT INTO public.users (id, create_date, email, enabled, first_name, last_name, password, token_expired) VALUES (2, '2023-02-01', 'student2@example.com', true, 'Ana', 'Avenadanio', '123456', false);
+INSERT INTO public.users (id, create_date, email, enabled, first_name, last_name, password, token_expired) VALUES (3, '2023-03-01', 'student3@example.com', true, 'Maria', 'Avendanio', '1234567', false);
