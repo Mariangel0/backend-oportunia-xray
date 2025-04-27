@@ -1,3 +1,5 @@
+INSERT INTO public.role (id, name) VALUES (1, 'USER');
+
 INSERT INTO public.users (id, create_date, email, enabled, first_name, last_name, password, token_expired)
 VALUES
 (1, '2025-04-23T10:00:00', 'user1@example.com', TRUE, 'John', 'Doe', 'password123', FALSE),
