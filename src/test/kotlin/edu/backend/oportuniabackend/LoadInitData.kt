@@ -42,6 +42,12 @@ class LoadInitData (
 
     @Autowired
     val adviceRepository: AdviceRepository,
+    @Autowired
+    val adminRepository: AdminRepository,
+    @Autowired
+    val curriculumRepository: CurriculumRepository,
+
+
 )
 {
     // Users
@@ -121,6 +127,32 @@ class LoadInitData (
     fun testAdviceFindById() {
         val advice: Advice = adviceRepository.findById(3).get()
         Assertions.assertTrue(advice.id.toInt() == 3)
+    }
+
+    // Admin
+    @Test
+    fun testAdminFindAll(){
+        val adminList: List<Admin> = adminRepository.findAll()
+        Assertions.assertTrue(adminList.size == 2)
+    }
+    @Test
+    fun testAdminFindById() {
+        val admin: Admin = adminRepository.findById(1).get()
+        Assertions.assertTrue(admin.id.toInt() == 1)
+    }
+
+    // Curriculums
+
+    @Test
+    fun testCurriculumFindAll(){
+        val curriculumList: List<Curriculum> = curriculumRepository.findAll()
+        Assertions.assertTrue(curriculumList.size == 5)
+    }
+
+    @Test
+    fun testCurriculumFindById() {
+        val curriculum: Curriculum = curriculumRepository.findById(1).get()
+        Assertions.assertTrue(curriculum.id?.toInt() == 1)
     }
 
 
