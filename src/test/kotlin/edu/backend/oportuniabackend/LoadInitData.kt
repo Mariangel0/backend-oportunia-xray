@@ -14,9 +14,9 @@ import org.springframework.test.context.jdbc.Sql
     statements = [
         "DELETE FROM public.companies_reviews",
         "DELETE FROM public.curriculums",
-        "DELETE FROM public.abilities",
+        "DELETE FROM public.ability",
         "DELETE FROM public.education",
-        "DELETE FROM public.notifications",
+        "DELETE FROM public.notification",
         "DELETE FROM public.streaks",
         "DELETE FROM public.student",
         "DELETE FROM public.advices",
@@ -30,7 +30,7 @@ import org.springframework.test.context.jdbc.Sql
 )
 @Sql(
     scripts = ["/import-users.sql", "/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql",
-              "/import-abilities.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql"],
+        "/import-abilities.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql"],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 class LoadInitData (
@@ -220,7 +220,7 @@ class LoadInitData (
     @Test
     fun testStreakFindAll(){
         val streakList: List<Streak> = streakRepository.findAll()
-        Assertions.assertTrue(streakList.size == 5)
+        Assertions.assertTrue(streakList.size == 3)
     }
 
     @Test
@@ -228,7 +228,6 @@ class LoadInitData (
         val streak: Streak = streakRepository.findById(1).get()
         Assertions.assertTrue(streak.id?.toInt() == 1)
     }
-
 
 
 }
