@@ -80,3 +80,5 @@ interface StreakRepository : JpaRepository<Streak, Long>{
 interface StudentProgressRepository : JpaRepository<StudentProgress, Long>{
     fun findByStudentId(@Param("studentId") studentId: Long): StudentProgress?
 }
+
+

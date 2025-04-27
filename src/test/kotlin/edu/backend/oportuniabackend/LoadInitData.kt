@@ -14,6 +14,10 @@ import org.springframework.test.context.jdbc.Sql
     statements = [
         "DELETE FROM public.companies_reviews",
         "DELETE FROM public.curriculums",
+        "DELETE FROM public.abilities",
+        "DELETE FROM public.education",
+        "DELETE FROM public.notifications",
+        "DELETE FROM public.streaks",
         "DELETE FROM public.student",
         "DELETE FROM public.advices",
         "DELETE FROM public.admin",
@@ -25,7 +29,8 @@ import org.springframework.test.context.jdbc.Sql
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @Sql(
-    scripts = ["/import-users.sql", "/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql"],
+    scripts = ["/import-users.sql", "/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql",
+              "/import-abilities.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql"],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 class LoadInitData (
@@ -43,10 +48,26 @@ class LoadInitData (
 
     @Autowired
     val adviceRepository: AdviceRepository,
+
     @Autowired
     val adminRepository: AdminRepository,
+
     @Autowired
     val curriculumRepository: CurriculumRepository,
+
+    @Autowired
+    val abilityRepository: AbilityRepository,
+
+    @Autowired
+    val educationRepository: EducationRepository,
+
+    @Autowired
+    val notificationRepository: NotificationRepository,
+
+    @Autowired
+    val streakRepository: StreakRepository,
+
+
 
 
     )
@@ -155,6 +176,59 @@ class LoadInitData (
         val curriculum: Curriculum = curriculumRepository.findById(1).get()
         Assertions.assertTrue(curriculum.id?.toInt() == 1)
     }
+
+    // Abilities
+    @Test
+    fun testAbilityFindAll(){
+        val abilityList: List<Ability> = abilityRepository.findAll()
+        Assertions.assertTrue(abilityList.size == 5)
+    }
+
+    @Test
+    fun testAbilityFindById() {
+        val ability: Ability = abilityRepository.findById(1).get()
+        Assertions.assertTrue(ability.id.toInt() == 1)
+    }
+
+    // Education
+    @Test
+    fun testEducationFindAll(){
+        val educationList: List<Education> = educationRepository.findAll()
+        Assertions.assertTrue(educationList.size == 5)
+    }
+
+    @Test
+    fun testEducationFindById() {
+        val education: Education = educationRepository.findById(1).get()
+        Assertions.assertTrue(education.id?.toInt() == 1)
+    }
+
+    // Notifications
+    @Test
+    fun testNotificationFindAll(){
+        val notificationList: List<Notification> = notificationRepository.findAll()
+        Assertions.assertTrue(notificationList.size == 5)
+    }
+
+    @Test
+    fun testNotificationFindById() {
+        val notification: Notification = notificationRepository.findById(1).get()
+        Assertions.assertTrue(notification.id?.toInt() == 1)
+    }
+
+    // Streaks
+    @Test
+    fun testStreakFindAll(){
+        val streakList: List<Streak> = streakRepository.findAll()
+        Assertions.assertTrue(streakList.size == 5)
+    }
+
+    @Test
+    fun testStreakFindById() {
+        val streak: Streak = streakRepository.findById(1).get()
+        Assertions.assertTrue(streak.id?.toInt() == 1)
+    }
+
 
 
 }
