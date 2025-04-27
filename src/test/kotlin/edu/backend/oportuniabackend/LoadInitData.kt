@@ -19,7 +19,7 @@ import org.springframework.test.context.jdbc.Sql
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @Sql(
-    scripts = ["/import-users.sql", "/import-companies.sql", "/import-companies_reviews.sql"],
+    scripts = ["/import-users.sql", "/import-companies.sql", "/import-students.sql", "/import-companies_reviews.sql"],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 class LoadInitData (
