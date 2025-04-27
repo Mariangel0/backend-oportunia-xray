@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql
 @Sql(
     statements = [
         "DELETE FROM public.companies_reviews",
+        "DELETE FROM public.curriculums",
         "DELETE FROM public.student",
         "DELETE FROM public.advices",
         "DELETE FROM public.admin",
@@ -48,7 +49,7 @@ class LoadInitData (
     val curriculumRepository: CurriculumRepository,
 
 
-)
+    )
 {
     // Users
     @Test
@@ -137,8 +138,8 @@ class LoadInitData (
     }
     @Test
     fun testAdminFindById() {
-        val admin: Admin = adminRepository.findById(1).get()
-        Assertions.assertTrue(admin.id.toInt() == 1)
+        val admin: Admin = adminRepository.findById(4).get()
+        Assertions.assertTrue(admin.id.toInt() == 4)
     }
 
     // Curriculums
