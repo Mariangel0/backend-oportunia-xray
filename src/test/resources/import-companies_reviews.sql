@@ -1,0 +1,5 @@
+INSERT INTO public.companies_reviews (id, student_id, company_id, rating, comment, created_at) VALUES (1, 1, 1, 4.5, 'Excelente ambiente laboral y cultura innovadora. Gran lugar para comenzar una carrera tecnológica.', '2025-03-01');
+INSERT INTO public.companies_reviews (id, student_id, company_id, rating, comment, created_at) VALUES (3, 2, 2, 4.0, 'Me encantó el enfoque en la diversidad e inclusión. Buen balance vida-trabajo.', '2025-03-12');
+INSERT INTO public.companies_reviews (id, student_id, company_id, rating, comment, created_at) VALUES (4, 3, 3, 3.5, 'Buen ritmo de trabajo, aunque algunos proyectos son desafiantes para juniors.', '2025-03-20');
+INSERT INTO public.companies_reviews (id, student_id, company_id, rating, comment, created_at) VALUES (5, 1, 2, 5.0, 'Participé en un internship increíble. Mentores muy comprometidos y proyectos reales.', '2025-04-01');
+INSERT INTO public.companies_reviews (id, student_id, company_id, rating, comment, created_at) VALUES (6, 2, 1, 3.0, 'Tecnología de punta, pero el proceso de selección fue bastante largo.', '2025-04-04');
