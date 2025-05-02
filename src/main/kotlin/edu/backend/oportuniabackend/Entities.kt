@@ -292,8 +292,11 @@ data class Company(
     var name: String,
     var description: String,
     var type: String,
-    var ubication: String,
+    var location: String,
     var employees: Int,
+
+    var vision: String,
+    var mission: String,
 
     @Column(name = "website_url")
     var websiteUrl: String,
@@ -305,6 +308,8 @@ data class Company(
 
     @OneToMany(mappedBy = "company")
     var experienceList: List<Experience>,
+
+
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -319,7 +324,7 @@ data class Company(
         if (name != other.name) return false
         if (description != other.description) return false
         if (type != other.type) return false
-        if (ubication != other.ubication) return false
+        if (location != other.location) return false
         if (websiteUrl != other.websiteUrl) return false
 
         return true
@@ -332,13 +337,13 @@ data class Company(
         result = 31 * result + name.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + type.hashCode()
-        result = 31 * result + ubication.hashCode()
+        result = 31 * result + location.hashCode()
         result = 31 * result + websiteUrl.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "Company(id=$id, name='$name', description='$description', type='$type', ubication='$ubication', employees=$employees, websiteUrl='$websiteUrl', rating=$rating)"
+        return "Company(id=$id, name='$name', description='$description', type='$type', ubication='$location', employees=$employees, websiteUrl='$websiteUrl', rating=$rating)"
     }
 }
 
