@@ -30,7 +30,14 @@ interface StudentMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface ExperienceMapper {
     fun experienceToExperienceResult(experience: Experience): ExperienceResult
+
     fun experienceInputToExperience(experienceInput: ExperienceInput): Experience
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    fun experienceInputToExperience(dto: ExperienceInput, @MappingTarget experience: Experience)
+
+    fun experienceListToExperienceResultList(experiences: List<Experience>): List<ExperienceResult>
+
+
     @Mapping(target = "company", ignore = true)
     fun updateExperienceFromInput(experienceInput: ExperienceInput, @MappingTarget experience: Experience)
 }
@@ -39,6 +46,7 @@ interface ExperienceMapper {
 interface AbilityMapper {
     fun abilityToAbilityResult(ability: Ability): AbilityResult
     fun abilityInputToAbility(abilityInput: AbilityInput): Ability
+    fun abilityListToAbilityResultList(abilities: List<Ability>): List<AbilityResult>
     @Mapping(target = "student", ignore = true)
     fun updateAbilityFromInput(abilityInput: AbilityInput, @MappingTarget ability: Ability)
 }
@@ -59,6 +67,11 @@ interface UserLoginMapper {
 interface StreakMapper {
     fun streakToStreakResult(streak: Streak): StreakResult
     fun streakInputToStreak(streakInput: StreakInput): Streak
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    fun streakInputToStreak(dto: StreakInput, @MappingTarget streak: Streak)
+
+    fun streakListToStreakResultList(streaks: List<Streak>): List<StreakResult>
     @Mapping(target = "student", ignore = true)
     fun updateStreakFromInput(streakInput: StreakInput, @MappingTarget streak: Streak)
 }
@@ -67,6 +80,7 @@ interface StreakMapper {
 interface StudentProgressMapper {
     fun studentProgressToStudentProgressResult(studentProgress: StudentProgress): StudentProgressResult
     fun studentProgressInputToStudentProgress(studentProgressInput: StudentProgressInput): StudentProgress
+    fun studentProgressListToStudentProgressResultList(studentProgress: List<StudentProgress>): List<StudentProgressResult>
     @Mapping(target = "student", ignore = true)
     fun updateStudentProgressFromInput(studentProgressInput: StudentProgressInput, @MappingTarget studentProgress: StudentProgress)
 }
@@ -75,6 +89,7 @@ interface StudentProgressMapper {
 interface NotificationMapper {
     fun notificationToNotificationResult(notification: Notification): NotificationResult
     fun notificationInputToNotification(notificationInput: NotificationInput): Notification
+    fun notificationListToNotificationResultList(notifications: List<Notification>): List<NotificationResult>
     @Mapping(target = "user", ignore = true)
     fun updateNotificationFromInput(notificationInput: NotificationInput, @MappingTarget notification: Notification)
 }
@@ -105,12 +120,16 @@ interface CompanyReviewMapper {
 interface IAAnalysisMapper {
     fun iaAnalysisToIAAnalysisInput(iaAnalysis: IAAnalysis): IAAnalysisInput
     fun iaAnalysisInputToIAAnalysis(iaAnalysisInput: IAAnalysisInput): IAAnalysis
+    fun iaAnalysisListToIAAnalysisDetailsList(iaAnalysis: List<IAAnalysis>): List<IAAnalysisDetails>
+    fun iaAnalysisToIAAnalysisDetails(iaAnalysis: IAAnalysis): IAAnalysisDetails
+
 }
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface InterviewMapper {
     fun interviewToInterviewResult(interview: Interview): InterviewResult
     fun interviewInputToInterview(interviewInput: InterviewInput): Interview
+    fun interviewListToInterviewResultList(interviews: List<Interview>): List<InterviewResult>
     @Mapping(target = "iaAnalysis", ignore = true)
     fun updateInterviewFromInput(interviewInput: InterviewInput, @MappingTarget interview: Interview)
 }
@@ -119,6 +138,11 @@ interface InterviewMapper {
 interface CurriculumMapper {
     fun curriculumToCurriculumResult(curriculum: Curriculum): CurriculumResult
     fun curriculumInputToCurriculum(curriculumInput: CurriculumInput): Curriculum
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    fun curriculumInputToCurriculum(dto: CurriculumInput, @MappingTarget curriculum: Curriculum)
+
+    fun curriculumListToCurriculumResultList(curriculums: List<Curriculum>): List<CurriculumResult>
     @Mapping(target = "iaAnalysis", ignore = true)
     fun updateCurriculumFromInput(curriculumInput: CurriculumInput, @MappingTarget curriculum: Curriculum)
 }
@@ -143,3 +167,18 @@ interface AdviceMapper {
     //fun adviceInputToAdvice(adviceInput: AdviceInput): Advice
 }
 
+// Education
+
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface EducationMapper {
+    fun educationToEducationResult(education: Education): EducationResult
+    fun educationInputToEducation(educationInput: EducationInput): Education
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    fun educationInputToEducation(dto: EducationInput, @MappingTarget education: Education)
+
+    fun educationListToEducationResultList(educations: List<Education>): List<EducationResult>
+
+    @Mapping(target = "student", ignore = true)
+    fun updateEducationFromInput(educationInput: EducationInput, @MappingTarget education: Education)
+}

@@ -69,6 +69,11 @@ data class StudentResult(
 )
 
 data class AdminInput(
+    var id: Long?=null, // revisar si hay que pasarle el id
+    var user: UserInput?=null,
+)
+
+data class AdminResult(
     var id: Long?=null,
     var user: UserInput?=null,
 )
@@ -146,6 +151,17 @@ data class IAAnalysisInput(
     var recommendation: String?=null,
     var score: Float?=null,
     var date: Date?=null,
+    var interview: InterviewResult,
+    var curriculum: CurriculumResult,
+)
+
+data class IAAnalysisDetails(
+    var id: Long?=null,
+    var recommendation: String?=null,
+    var interview: InterviewResult,
+    var curriculum: CurriculumResult,
+    var score: Float?=null,
+    var date: Date?=null,
 )
 
 data class CurriculumInput(
@@ -192,6 +208,23 @@ data class InterviewResult(
     var result: String,
     var student: StudentResult,
     var iaAnalysis: IAAnalysisInput? = null
+)
+
+// Education
+
+data class EducationInput(
+    var id: Long? = null,
+    var student: StudentInput? = null,
+    var name: String? = null,
+    var institution: String? = null,
+    var year: Int? = null,
+)
+
+data class EducationResult(
+    var id: Long? = null,
+    var name: String? = null,
+    var institution: String? = null,
+    var year: Int? = null,
 )
 
 // Experience
