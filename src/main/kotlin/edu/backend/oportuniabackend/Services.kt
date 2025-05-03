@@ -159,7 +159,7 @@ class AbstractStudentService (
             )
         }
     }
-
+}
 
 interface AdminService {
     fun findAll(): List<AdminInput>?
@@ -354,16 +354,6 @@ class AbstractCompanyReviewService (
         }
     }
 }
-
-
-
-
-
-
-}
-
-
-
 
 interface AbilityService{
     fun findAll(): List<AbilityResult>?
