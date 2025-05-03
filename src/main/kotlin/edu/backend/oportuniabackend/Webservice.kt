@@ -4,6 +4,105 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("\${url.users}")
+class UserController(private val userService: UserService) {
+
+    @GetMapping
+    @ResponseBody
+    fun findAll() = userService.findAll()
+
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable id: Long) = userService.findById(id)
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun create(@RequestBody userInput: UserInput): UserResult? {
+        return userService.createUser(userInput)
+    }
+
+    @PutMapping("{id}",consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@PathVariable id: Long, @RequestBody userInput: UserInput): UserResult? {
+        return userService.updateUser(id, userInput)
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseBody
+    fun deleteById(@PathVariable id: Long) {
+        userService.deleteUser(id)
+    }
+}
+
+
+@RestController
+@RequestMapping("\${url.students}")
+class StudentController(private val studentService: StudentService) {
+
+    @GetMapping
+    @ResponseBody
+    fun findAll() = studentService.findAll()
+
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable id: Long) = studentService.findById(id)
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun create(@RequestBody studentInput: StudentInput): StudentResult? {
+        return studentService.createStudent(studentInput)
+    }
+
+    @PutMapping("{id}",consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@PathVariable id: Long, @RequestBody studentInput: StudentInput): StudentResult? {
+        return studentService.updateStudent(id, studentInput)
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseBody
+    fun deleteById(@PathVariable id: Long) {
+        studentService.deleteStudent(id)
+    }
+}
+
+
+@RestController
+@RequestMapping("\${url.companies}")
+class CompanyController(private val companyService: CompanyService) {
+
+    @GetMapping
+    @ResponseBody
+    fun findAll() = companyService.findAll()
+
+    @GetMapping("info")
+    @ResponseBody
+    fun findAllInfo() = companyService.findAllInfo()
+
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable id: Long) = companyService.findById(id)
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun create(@RequestBody companyInput: CompanyInput): CompanyResult? {
+        return companyService.createCompany(companyInput)
+    }
+
+    @PutMapping("{id}",consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@PathVariable id: Long, @RequestBody companyInput: CompanyInput): CompanyResult? {
+        return companyService.updateCompany(id, companyInput)
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseBody
+    fun deleteById(@PathVariable id: Long) {
+        companyService.deleteCompany(id)
+    }
+}
+
+@RestController
 @RequestMapping("\${url.abilities}")
 class AbilityController(private val abilityService: AbilityService) {
 
