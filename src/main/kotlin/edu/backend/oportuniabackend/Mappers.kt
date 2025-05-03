@@ -14,6 +14,8 @@ interface UserMapper {
     fun privilegeToPrivilegeDetails(privilege: Privilege): PrivilegeDetails
     @Mapping(target = "password", ignore = true)
     fun updateUserFromInput(userInput: UserInput, @MappingTarget user: User)
+
+    fun userListToUserListResult (userList: List<User>) : List<UserResult>
 }
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -25,6 +27,8 @@ interface StudentMapper {
     fun abilityListToAbilityResultList(abilities: List<Ability>): List<AbilityResult>
     fun companyReviewListToCompanyReviewResultList(companyReviews: List<CompanyReview>): List<CompanyReviewResult>
     fun curriculumListToCurriculumResultList(curriculums: List<Curriculum>): List<CurriculumResult>
+
+    fun studentListToStudentListResult (studentList: List<Student>) : List<StudentResult>
 }
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -47,6 +51,9 @@ interface AbilityMapper {
 interface AdminMapper {
     fun adminToAdminInput(admin: Admin): AdminInput
     fun adminInputToAdmin(adminInput: AdminInput): Admin
+    fun adminListToAdminListResult (adminList: List<Admin>) : List<AdminInput>
+    @Mapping(target = "user", ignore = true)
+    fun updateAdminFromInput(adminInput: AdminInput, @MappingTarget admin: Admin)
 }
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -86,9 +93,13 @@ interface CompanyMapper {
     fun companyToCompanyResult(company: Company): CompanyResult
     fun companyToCompanyResultLarge(company: Company): CompanyResultLarge
     fun companyInputToCompany(companyInput: CompanyInput): Company
+
+    fun companyListToCompanyListResult (companyList: List<Company>) : List<CompanyResult>
+    fun companyListToCompanyListResultLarge (companyList: List<Company>) : List<CompanyResultLarge>
+
     @Mapping(target = "companyReviewList", ignore = true)
     fun updateCompanyFromInput(companyInput: CompanyInput, @MappingTarget company: Company)
-    fun companyReviewListToCompanyReviewResultList(companyReviews: List<CompanyReview>): List<CompanyReviewResult>
+
 }
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -97,6 +108,7 @@ interface CompanyReviewMapper {
     fun companyReviewInputToCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReview
     @Mapping(target = "student", ignore = true)
     fun updateCompanyReviewFromInput(companyReviewInput: CompanyReviewInput, @MappingTarget companyReview: CompanyReview)
+    fun companyReviewListToCompanyReviewResultList(companyReviews: List<CompanyReview>): List<CompanyReviewResult>
 }
 
 //CV AND INTERVIEWS
