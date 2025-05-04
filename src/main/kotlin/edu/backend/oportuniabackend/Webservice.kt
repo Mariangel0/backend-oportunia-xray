@@ -21,8 +21,7 @@ class UserController(private val userService: UserService) {
         return userService.createUser(userInput)
     }
 
-    @PutMapping("{id}",consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ResponseBody
+    @PutMapping("{id}", consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun update(@PathVariable id: Long, @RequestBody userInput: UserInput): UserResult? {
         return userService.updateUser(id, userInput)
     }
@@ -33,7 +32,6 @@ class UserController(private val userService: UserService) {
         userService.deleteUser(id)
     }
 }
-
 
 @RestController
 @RequestMapping("\${url.students}")
@@ -214,7 +212,7 @@ class CurriculumController(private val curriculumService: CurriculumService) {
         return curriculumService.create(curriculumInput)
     }
 
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("{id}",consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun update(@RequestBody curriculumInput: CurriculumInput) : CurriculumResult? {
         return curriculumService.update(curriculumInput)

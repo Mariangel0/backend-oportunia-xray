@@ -27,7 +27,8 @@ data class UserInput(
     var email: String?=null,
     var password: String?=null,
     var enabled: Boolean?=null,
-    var roles: List<RoleDetails>?=null,
+    var createDate: Date? =null,
+    var roles: List<RoleDetails>?=null
 )
 
 data class UserLoginInput(
@@ -53,7 +54,7 @@ data class StudentInput(
     var premiun: Boolean?=null,
     var linkedinUrl: String?=null,
     var githubUrl: String?=null,
-    var bornDate: Date?=null,
+    var bornDate: String?=null,
     var location: String?=null,
     var user: UserInput?=null,
 )
@@ -64,7 +65,7 @@ data class StudentResult(
     var premiun: Boolean,
     var linkedinUrl: String,
     var githubUrl: String,
-    var bornDate: Date,
+    var bornDate: String,
     var location: String
 )
 
