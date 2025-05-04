@@ -58,6 +58,7 @@ interface AbilityMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface AdminMapper {
     fun adminToAdminInput(admin: Admin): AdminInput
+    fun adminToAdminResult(admin: Admin): AdminResult
     fun adminInputToAdmin(adminInput: AdminInput): Admin
     fun adminListToAdminListResult (adminList: List<Admin>) : List<AdminInput>
     @Mapping(target = "user", ignore = true)
