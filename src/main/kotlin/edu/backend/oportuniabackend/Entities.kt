@@ -623,7 +623,7 @@ data class Interview(
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
-    var student: Student,
+    var student: Student? = null,
 
     @OneToOne(mappedBy = "interview")
     var iaAnalysis: IAAnalysis? = null
