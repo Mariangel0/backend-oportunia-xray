@@ -13,7 +13,7 @@ import org.springframework.test.context.jdbc.Sql
 @Sql(
     statements = [
         "DELETE FROM public.companies_reviews",
-        "DELETE FROM public.experience",
+        "DELETE FROM public.experiences",
         "DELETE FROM public.interview",
         "DELETE FROM public.curriculums",
         "DELETE FROM public.ability",
@@ -141,7 +141,7 @@ class LoadInitData (
     @Test
     fun testStudentFindById() {
         val student: Student = studentRepository.findById(1).get()
-        Assertions.assertTrue(student.id.toInt() == 1)
+        Assertions.assertTrue(student.id?.toInt() == 1)
     }
 
     // Advices
@@ -194,7 +194,7 @@ class LoadInitData (
     @Test
     fun testAbilityFindById() {
         val ability: Ability = abilityRepository.findById(1).get()
-        Assertions.assertTrue(ability.id.toInt() == 1)
+        Assertions.assertTrue(ability.id?.toInt() == 1)
     }
 
     // Education
