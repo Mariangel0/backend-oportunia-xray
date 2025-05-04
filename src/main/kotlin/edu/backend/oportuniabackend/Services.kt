@@ -452,15 +452,11 @@ class AbstractCurriculumService(
 
     override fun create(curriculumInput: CurriculumInput): CurriculumResult? {
         val curriculum = curriculumMapper.curriculumInputToCurriculum(curriculumInput)
-
         val studentId = curriculumInput.student?.id
             ?: throw IllegalArgumentException("Student id is required to create a Curriculum")
-
         val student = studentRepository.findById(studentId)
             .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
-
         curriculum.student = student
-
         return curriculumMapper.curriculumToCurriculumResult(
             curriculumRepository.save(curriculum)
         )
@@ -470,9 +466,7 @@ class AbstractCurriculumService(
     override fun update(curriculumInput: CurriculumInput): CurriculumResult? {
         val existingCurriculum = curriculumRepository.findById(curriculumInput.id!!)
             .orElseThrow { NoSuchElementException("The Curriculum with the id: ${curriculumInput.id} not found!") }
-
         curriculumMapper.curriculumInputToCurriculum(curriculumInput, existingCurriculum)
-
         curriculumInput.student?.id?.let {
             val student = studentRepository.findById(it)
                 .orElseThrow { NoSuchElementException("Student with id $it not found") }
@@ -688,6 +682,8 @@ class AbstractInterviewService (
     val interviewRepository: InterviewRepository,
     @Autowired
     private val interviewMapper: InterviewMapper,
+    @Autowired
+    private val studentRepository: StudentRepository
 ): InterviewService {
     override fun findAll(): List<InterviewResult>? {
         return interviewMapper.interviewListToInterviewResultList(
@@ -707,11 +703,21 @@ class AbstractInterviewService (
     }
 
     override fun create(interviewInput: InterviewInput): InterviewResult? {
-        val interview: Interview = interviewMapper.interviewInputToInterview(interviewInput)
+        val interview = interviewMapper.interviewInputToInterview(interviewInput)
+
+        val studentId = interviewInput.student?.id
+            ?: throw IllegalArgumentException("Student ID is required for interview creation")
+
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
+
+        interview.student = student
+
         return interviewMapper.interviewToInterviewResult(
             interviewRepository.save(interview)
         )
     }
+
 
     @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {

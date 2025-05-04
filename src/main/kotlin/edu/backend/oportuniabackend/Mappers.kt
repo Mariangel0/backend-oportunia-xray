@@ -154,6 +154,7 @@ interface IAAnalysisMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface InterviewMapper {
     fun interviewToInterviewResult(interview: Interview): InterviewResult
+    @Mapping(target = "student", ignore = true)
     fun interviewInputToInterview(interviewInput: InterviewInput): Interview
     fun interviewListToInterviewResultList(interviews: List<Interview>): List<InterviewResult>
     @Mapping(target = "iaAnalysis", ignore = true)
@@ -163,6 +164,7 @@ interface InterviewMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CurriculumMapper {
     fun curriculumToCurriculumResult(curriculum: Curriculum): CurriculumResult
+    @Mapping(target = "student", ignore = true)
     fun curriculumInputToCurriculum(curriculumInput: CurriculumInput): Curriculum
     @Mapping(target = "iaAnalysis", ignore = true)
     @Mapping(target = "student", ignore = true)
