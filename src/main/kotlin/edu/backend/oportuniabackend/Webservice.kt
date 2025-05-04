@@ -67,7 +67,7 @@ class StudentController(private val studentService: StudentService) {
 }
 
 @RestController
-@RequestMapping("\${url.students}")
+@RequestMapping("\${url.admins}")
 class AdminController(private val adminService: AdminService) {
 
     @GetMapping

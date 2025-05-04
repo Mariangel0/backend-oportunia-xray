@@ -378,7 +378,7 @@ class AbstractAbilityService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): AbilityResult? {
         val ability: Optional<Ability> = abilityRepository.findById(id)
-        if(ability.isPresent){
+        if(ability.isEmpty){
             throw NoSuchElementException(String.format("The Ability with the id: %s not found!", id))
         }
         return abilityMapper.abilityToAbilityResult(
@@ -561,7 +561,7 @@ class AbstractExperienceService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): ExperienceResult? {
         val experience: Optional<Experience> = experienceRepository.findById(id)
-        if(experience.isPresent){
+        if(experience.isEmpty){
             throw NoSuchElementException(String.format("The Experience with the id: %s not found!", id))
         }
         return experienceMapper.experienceToExperienceResult(
@@ -677,7 +677,7 @@ class AbstractInterviewService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): InterviewResult? {
         val interview: Optional<Interview> = interviewRepository.findById(id)
-        if(interview.isPresent){
+        if(interview.isEmpty){
             throw NoSuchElementException(String.format("The Interview with the id: %s not found!", id))
         }
         return interviewMapper.interviewToInterviewResult(
@@ -725,7 +725,7 @@ class AbstractNotificationService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): NotificationResult? {
         val notification: Optional<Notification> = notificationRepository.findById(id)
-        if(notification.isPresent){
+        if(notification.isEmpty){
             throw NoSuchElementException(String.format("The Notification with the id: %s not found!", id))
         }
         return notificationMapper.notificationToNotificationResult(
@@ -836,7 +836,7 @@ class AbstractStudentProgressService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): StudentProgressResult? {
         val studentProgress: Optional<StudentProgress> = studentProgressRepository.findById(id)
-        if(studentProgress.isPresent){
+        if(studentProgress.isEmpty){
             throw NoSuchElementException(String.format("The StudentProgress with the id: %s not found!", id))
         }
         return studentProgressMapper.studentProgressToStudentProgressResult(
