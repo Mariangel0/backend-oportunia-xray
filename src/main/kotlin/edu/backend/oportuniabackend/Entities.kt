@@ -11,26 +11,26 @@ data class User(
     var id: Long? = null,
 
     @Column(name = "first_name")
-    var firstName: String,
+    var firstName: String? = null,
 
     @Column(name = "last_name")
-    var lastName: String,
+    var lastName: String? = null,
 
-    var password: String,
+    var password: String? = null,
 
     @Column(unique = true)
-    var email: String,
+    var email: String? = null,
 
     @Column(name = "create_date")
-    var createDate: Date,
+    var createDate: Date? = null,
 
-    var enabled: Boolean,
+    var enabled: Boolean? = null,
 
     @Column(name = "token_expired")
-    var tokenExpired: Boolean,
+    var tokenExpired: Boolean? = null,
 
     @OneToMany(mappedBy = "user")
-    var notificationList: List<Notification> = emptyList(),
+    var notificationList: List<Notification>? = null,
 
 
     @ManyToMany
@@ -39,7 +39,7 @@ data class User(
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")]
     )
-    var roles: Set<Role> = emptySet()
+    var roles: Set<Role>? = null,
 
 
 ) {
@@ -168,21 +168,21 @@ data class Privilege(
 @Table(name = "student")
 data class Student(
     @Id
-    var id: Long,
+    var id: Long? = null,
 
-    var description: String,
-    var premiun: Boolean,
+    var description: String? = null,
+    var premiun: Boolean? = null,
 
     @Column(name = "linkedin_url")
-    var linkedinUrl: String,
+    var linkedinUrl: String? = null,
 
     @Column(name = "github_url")
-    var githubUrl: String,
+    var githubUrl: String? = null,
 
     @Column(name = "born_date")
-    var bornDate: String,
+    var bornDate: String? = null,
 
-    var location: String,
+    var location: String? = null,
 
     @OneToOne
     @MapsId
@@ -190,28 +190,28 @@ data class Student(
     var user: User,
 
     @OneToMany(mappedBy = "student")
-    var abilitiesList: List<Ability>,
+    var abilitiesList: List<Ability>? = null,
 
     @OneToMany(mappedBy = "student")
-    var companyReviewList: List<CompanyReview>,
+    var companyReviewList: List<CompanyReview>? = null,
 
     @OneToMany(mappedBy = "student")
-    var curriculumList: List<Curriculum>,
+    var curriculumList: List<Curriculum>? = null,
 
     @OneToMany(mappedBy = "student")
-    var educationList: List<Education>,
+    var educationList: List<Education>? = null,
 
     @OneToMany(mappedBy = "student")
-    var experienceList: List<Experience>,
+    var experienceList: List<Experience>? = null,
 
     @OneToMany(mappedBy = "student")
-    var interviewList: List<Interview>,
+    var interviewList: List<Interview>? = null,
 
     @OneToOne(mappedBy = "student")
-    var streak: Streak,
+    var streak: Streak? = null,
 
     @OneToOne(mappedBy = "student")
-    var studentProgress: StudentProgress
+    var studentProgress: StudentProgress? = null,
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -349,8 +349,10 @@ data class Company(
 @Entity
 @Table(name = "ability")
 data class Ability(
+
     @Id
-    var id: Long,
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
 
     var name: String,
 

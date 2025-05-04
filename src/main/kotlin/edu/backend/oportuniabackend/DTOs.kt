@@ -121,6 +121,7 @@ data class AbilityInput(
 data class AbilityResult(
     var id: Long?=null,
     var name: String?=null,
+    var student: StudentResult,
 )
 
 data class AdviceDetails(
@@ -297,12 +298,3 @@ data class StudentProgressResult(
     var uploadedCl: Int? = null,
     var lasActivity: Date? = null,
 )
-
-
-
-
-
-
-
-
-

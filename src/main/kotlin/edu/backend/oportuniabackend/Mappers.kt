@@ -36,13 +36,12 @@ interface ExperienceMapper {
     fun experienceToExperienceResult(experience: Experience): ExperienceResult
 
     fun experienceInputToExperience(experienceInput: ExperienceInput): Experience
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     fun experienceInputToExperience(dto: ExperienceInput, @MappingTarget experience: Experience)
 
     fun experienceListToExperienceResultList(experiences: List<Experience>): List<ExperienceResult>
-
-
-    @Mapping(target = "company", ignore = true)
+    fun companyInputToCompany(companyInput: CompanyInput): Company
     fun updateExperienceFromInput(experienceInput: ExperienceInput, @MappingTarget experience: Experience)
 }
 
@@ -53,6 +52,9 @@ interface AbilityMapper {
     fun abilityListToAbilityResultList(abilities: List<Ability>): List<AbilityResult>
     @Mapping(target = "student", ignore = true)
     fun updateAbilityFromInput(abilityInput: AbilityInput, @MappingTarget ability: Ability)
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    fun abilityInputToAbility(dto: AbilityInput, @MappingTarget ability: Ability)
 }
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
