@@ -13,7 +13,7 @@ import org.springframework.test.context.jdbc.Sql
 @Sql(
     statements = [
         "DELETE FROM public.companies_reviews",
-        "DELETE FROM public.interviews",
+        "DELETE FROM public.interview",
         "DELETE FROM public.curriculums",
         "DELETE FROM public.ability",
         "DELETE FROM public.education",
@@ -30,7 +30,7 @@ import org.springframework.test.context.jdbc.Sql
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @Sql(
-    scripts = ["/import-users.sql", "import-interviews.sql","/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql",
+    scripts = ["/import-users.sql", "/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-interviews.sql","/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql",
         "/import-abilities.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql"],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
