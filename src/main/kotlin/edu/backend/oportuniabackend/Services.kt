@@ -164,8 +164,8 @@ class AbstractStudentService (
 interface AdminService {
     fun findAll(): List<AdminInput>?
     fun findById(id: Long): AdminInput?
-    fun createAdmin(adminInput: AdminInput): AdminInput?
-    fun updateAdmin(id: Long, adminInput: AdminInput): AdminInput?
+    fun createAdmin(adminInput: AdminInput): AdminResult?
+    fun updateAdmin(id: Long, adminInput: AdminInput): AdminResult?
     fun deleteAdmin(id: Long)
 }
 
@@ -192,14 +192,15 @@ class AbstractAdminService (
         return adminMapper.adminToAdminInput(admin.get(),)
     }
 
-    override fun createAdmin(adminInput: AdminInput): AdminInput? {
-        return adminMapper.adminToAdminInput(
-            adminRepository.save(adminMapper.adminInputToAdmin(adminInput))
+    override fun createAdmin(adminInput: AdminInput): AdminResult? {
+        val admin: Admin = adminMapper.adminInputToAdmin(adminInput)
+        return adminMapper.adminToAdminResult(
+            adminRepository.save(admin)
         )
     }
 
     @Throws(NoSuchElementException::class)
-    override fun updateAdmin(id: Long, adminInput: AdminInput): AdminInput? {
+    override fun updateAdmin(id: Long, adminInput: AdminInput): AdminResult? {
         val admin: Optional<Admin> = adminRepository.findById(adminInput.id!!)
         if (admin.isEmpty) {
             throw NoSuchElementException(
@@ -208,9 +209,7 @@ class AbstractAdminService (
         }
         val adminUpdated: Admin = admin.get()
         adminMapper.updateAdminFromInput(adminInput, adminUpdated)
-        return adminMapper.adminToAdminInput(
-            adminRepository.save(adminUpdated)
-        )
+        return adminMapper.adminToAdminResult(adminRepository.save(adminUpdated))
     }
 
     @Throws(NoSuchElementException::class)
