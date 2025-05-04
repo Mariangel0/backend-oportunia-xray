@@ -20,9 +20,8 @@ class UserController(private val userService: UserService) {
     fun create(@RequestBody userInput: UserInput): UserResult? {
         return userService.createUser(userInput)
     }
-
-    @PutMapping("{id}",consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ResponseBody
+    
+    @PutMapping("{id}", consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun update(@PathVariable id: Long, @RequestBody userInput: UserInput): UserResult? {
         return userService.updateUser(id, userInput)
     }

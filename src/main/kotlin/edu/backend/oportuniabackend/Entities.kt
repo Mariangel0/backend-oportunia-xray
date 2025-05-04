@@ -30,7 +30,8 @@ data class User(
     var tokenExpired: Boolean,
 
     @OneToMany(mappedBy = "user")
-    var notificationList: List<Notification>,
+    var notificationList: List<Notification> = emptyList(),
+
 
     @ManyToMany
     @JoinTable(
