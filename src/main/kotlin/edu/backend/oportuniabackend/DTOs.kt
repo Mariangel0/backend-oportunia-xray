@@ -132,7 +132,7 @@ data class AdviceDetails(
 
 data class CompanyReviewInput(
     var id: Long?=null,
-    var description: String?=null,
+    var comment: String?=null,
     var rating: Float?=null,
     var company: CompanyInput?=null,
     var student: StudentInput?=null,
@@ -140,7 +140,7 @@ data class CompanyReviewInput(
 
 data class CompanyReviewResult(
     var id: Long?=null,
-    var description: String?=null,
+    var comment: String?=null,
     var rating: Float?=null,
     var student: StudentInput?=null,
     // no se si se necesita company

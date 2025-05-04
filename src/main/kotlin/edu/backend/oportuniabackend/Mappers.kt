@@ -130,11 +130,9 @@ interface CompanyMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CompanyReviewMapper {
     fun companyReviewToCompanyReviewResult(companyReview: CompanyReview): CompanyReviewResult
-
     @Mapping(target = "company", ignore = true)
     @Mapping(target = "student", ignore = true)
     fun companyReviewInputToCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReview
-
     @Mapping(target = "student", ignore = true)
     @Mapping(target = "company", ignore = true)
     fun updateCompanyReviewFromInput(companyReviewInput: CompanyReviewInput, @MappingTarget companyReview: CompanyReview)
@@ -158,6 +156,7 @@ interface InterviewMapper {
     fun interviewToInterviewResult(interview: Interview): InterviewResult
     @Mapping(target = "student", ignore = true)
     fun interviewInputToInterview(interviewInput: InterviewInput): Interview
+
     fun interviewListToInterviewResultList(interviews: List<Interview>): List<InterviewResult>
     @Mapping(target = "iaAnalysis", ignore = true)
     fun updateInterviewFromInput(interviewInput: InterviewInput, @MappingTarget interview: Interview)
@@ -166,13 +165,16 @@ interface InterviewMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CurriculumMapper {
     fun curriculumToCurriculumResult(curriculum: Curriculum): CurriculumResult
+
     @Mapping(target = "student", ignore = true)
     fun curriculumInputToCurriculum(curriculumInput: CurriculumInput): Curriculum
-    @Mapping(target = "iaAnalysis", ignore = true)
+
     @Mapping(target = "student", ignore = true)
     fun curriculumInputToCurriculum(curriculumInput: CurriculumInput, @MappingTarget curriculum: Curriculum)
+
     fun curriculumListToCurriculumResultList(curriculums: List<Curriculum>): List<CurriculumResult>
 }
+
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface InterviewAnalysisMapper {

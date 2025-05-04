@@ -451,12 +451,15 @@ class AbstractCurriculumService(
     }
 
     override fun create(curriculumInput: CurriculumInput): CurriculumResult? {
-        val curriculum = curriculumMapper.curriculumInputToCurriculum(curriculumInput)
         val studentId = curriculumInput.student?.id
-            ?: throw IllegalArgumentException("Student id is required to create a Curriculum")
+            ?: throw IllegalArgumentException("Student ID is required")
+
         val student = studentRepository.findById(studentId)
-            .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
+            .orElseThrow { NoSuchElementException("Student with ID $studentId not found") }
+
+        val curriculum = curriculumMapper.curriculumInputToCurriculum(curriculumInput)
         curriculum.student = student
+
         return curriculumMapper.curriculumToCurriculumResult(
             curriculumRepository.save(curriculum)
         )
@@ -703,21 +706,19 @@ class AbstractInterviewService (
     }
 
     override fun create(interviewInput: InterviewInput): InterviewResult? {
-        val interview = interviewMapper.interviewInputToInterview(interviewInput)
-
         val studentId = interviewInput.student?.id
             ?: throw IllegalArgumentException("Student ID is required for interview creation")
 
         val student = studentRepository.findById(studentId)
             .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
 
+        val interview = interviewMapper.interviewInputToInterview(interviewInput)
         interview.student = student
 
         return interviewMapper.interviewToInterviewResult(
             interviewRepository.save(interview)
         )
     }
-
 
     @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {
