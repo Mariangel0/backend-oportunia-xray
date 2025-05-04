@@ -33,7 +33,6 @@ class UserController(private val userService: UserService) {
     }
 }
 
-
 @RestController
 @RequestMapping("\${url.students}")
 class StudentController(private val studentService: StudentService) {
@@ -62,37 +61,6 @@ class StudentController(private val studentService: StudentService) {
     @ResponseBody
     fun deleteById(@PathVariable id: Long) {
         studentService.deleteStudent(id)
-    }
-}
-
-@RestController
-@RequestMapping("\${url.students}")
-class AdminController(private val adminService: AdminService) {
-
-    @GetMapping
-    @ResponseBody
-    fun findAll() = adminService.findAll()
-
-    @GetMapping("{id}")
-    @ResponseBody
-    fun findById(@PathVariable id: Long) = adminService.findById(id)
-
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ResponseBody
-    fun create(@RequestBody adminInput: AdminInput): AdminResult? {
-        return adminService.createAdmin(adminInput)
-    }
-
-    @PutMapping("{id}",consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ResponseBody
-    fun update(@PathVariable id: Long, @RequestBody adminInput: AdminInput): AdminResult? {
-        return adminService.updateAdmin(id, adminInput)
-    }
-
-    @DeleteMapping("{id}")
-    @ResponseBody
-    fun deleteById(@PathVariable id: Long) {
-        adminService.deleteAdmin(id)
     }
 }
 
@@ -213,7 +181,7 @@ class CurriculumController(private val curriculumService: CurriculumService) {
         return curriculumService.create(curriculumInput)
     }
 
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("{id}",consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun update(@RequestBody curriculumInput: CurriculumInput) : CurriculumResult? {
         return curriculumService.update(curriculumInput)

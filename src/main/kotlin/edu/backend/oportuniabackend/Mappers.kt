@@ -106,24 +106,37 @@ interface NotificationMapper {
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CompanyMapper {
+
     fun companyToCompanyResult(company: Company): CompanyResult
+
     fun companyToCompanyResultLarge(company: Company): CompanyResultLarge
+
+    @Mapping(target = "companyReviewList", expression = "java(java.util.Collections.emptyList())")
+    @Mapping(target = "experienceList", expression = "java(java.util.Collections.emptyList())")
     fun companyInputToCompany(companyInput: CompanyInput): Company
 
-    fun companyListToCompanyListResult (companyList: List<Company>) : List<CompanyResult>
-    fun companyListToCompanyListResultLarge (companyList: List<Company>) : List<CompanyResultLarge>
+    fun companyListToCompanyListResult(companyList: List<Company>): List<CompanyResult>
+
+    fun companyListToCompanyListResultLarge(companyList: List<Company>): List<CompanyResultLarge>
 
     @Mapping(target = "companyReviewList", ignore = true)
+    @Mapping(target = "experienceList", ignore = true)
     fun updateCompanyFromInput(companyInput: CompanyInput, @MappingTarget company: Company)
-
 }
+
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CompanyReviewMapper {
     fun companyReviewToCompanyReviewResult(companyReview: CompanyReview): CompanyReviewResult
-    fun companyReviewInputToCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReview
+
+    @Mapping(target = "company", ignore = true)
     @Mapping(target = "student", ignore = true)
+    fun companyReviewInputToCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReview
+
+    @Mapping(target = "student", ignore = true)
+    @Mapping(target = "company", ignore = true)
     fun updateCompanyReviewFromInput(companyReviewInput: CompanyReviewInput, @MappingTarget companyReview: CompanyReview)
+
     fun companyReviewListToCompanyReviewResultList(companyReviews: List<CompanyReview>): List<CompanyReviewResult>
 }
 
@@ -151,15 +164,11 @@ interface InterviewMapper {
 interface CurriculumMapper {
     fun curriculumToCurriculumResult(curriculum: Curriculum): CurriculumResult
     fun curriculumInputToCurriculum(curriculumInput: CurriculumInput): Curriculum
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    fun curriculumInputToCurriculum(dto: CurriculumInput, @MappingTarget curriculum: Curriculum)
-
-    fun curriculumListToCurriculumResultList(curriculums: List<Curriculum>): List<CurriculumResult>
     @Mapping(target = "iaAnalysis", ignore = true)
-    fun updateCurriculumFromInput(curriculumInput: CurriculumInput, @MappingTarget curriculum: Curriculum)
+    @Mapping(target = "student", ignore = true)
+    fun curriculumInputToCurriculum(curriculumInput: CurriculumInput, @MappingTarget curriculum: Curriculum)
+    fun curriculumListToCurriculumResultList(curriculums: List<Curriculum>): List<CurriculumResult>
 }
-
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface InterviewAnalysisMapper {

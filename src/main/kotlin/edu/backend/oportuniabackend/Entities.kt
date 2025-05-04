@@ -305,12 +305,10 @@ data class Company(
     var rating: Float,
 
     @OneToMany(mappedBy = "company")
-    var companyReviewList: List<CompanyReview>,
+    var companyReviewList: List<CompanyReview> = emptyList(),
 
     @OneToMany(mappedBy = "company")
-    var experienceList: List<Experience>,
-
-
+    var experienceList: List<Experience> = emptyList()
 
 ) {
     override fun equals(other: Any?): Boolean {

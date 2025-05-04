@@ -308,6 +308,11 @@ class AbstractCompanyReviewService (
     private val companyReviewRepository: CompanyReviewRepository,
     @Autowired
     private val companyReviewMapper: CompanyReviewMapper,
+    @Autowired
+    private var companyRepository: CompanyRepository,
+    @Autowired
+    private var studentRepository: StudentRepository
+
     ): CompanyReviewService {
 
     override fun findAll(): List<CompanyReviewResult>? {
@@ -325,14 +330,18 @@ class AbstractCompanyReviewService (
     }
 
     override fun createCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReviewResult? {
-        return companyReviewMapper.companyReviewToCompanyReviewResult(
-            companyReviewRepository.save(
-                companyReviewMapper.companyReviewInputToCompanyReview(
-                    companyReviewInput
-                )
-            )
-        )
+        val entity = companyReviewMapper.companyReviewInputToCompanyReview(companyReviewInput)
+        companyReviewInput.company?.id?.let {
+            entity.company = companyRepository.findById(it)
+                .orElseThrow { NoSuchElementException("Company with id $it not found") }
+        }
+        companyReviewInput.student?.id?.let {
+            entity.student = studentRepository.findById(it)
+                .orElseThrow { NoSuchElementException("Student with id $it not found") }
+        }
+        return companyReviewMapper.companyReviewToCompanyReviewResult(companyReviewRepository.save(entity))
     }
+
     @Throws(NoSuchElementException::class)
     override fun updateCompanyReview(id: Long, companyReviewInput: CompanyReviewInput): CompanyReviewResult? {
         val companyReview: Optional<CompanyReview> = companyReviewRepository.findById(companyReviewInput.id!!)
@@ -418,12 +427,15 @@ interface CurriculumService{
 }
 
 @Service
-class AbstractCurriculumService (
+class AbstractCurriculumService(
     @Autowired
     val curriculumRepository: CurriculumRepository,
     @Autowired
     private val curriculumMapper: CurriculumMapper,
-): CurriculumService {
+    @Autowired
+    private val studentRepository: StudentRepository
+) : CurriculumService {
+
     override fun findAll(): List<CurriculumResult>? {
         return curriculumMapper.curriculumListToCurriculumResultList(
             curriculumRepository.findAll()
@@ -432,19 +444,23 @@ class AbstractCurriculumService (
 
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): CurriculumResult? {
-        val curriculum: Optional<Curriculum> = curriculumRepository.findById(id)
-        if (curriculum.isEmpty) {
-            throw NoSuchElementException(
-                String.format(
-                    "The Curriculum with the id: %s not found!", id))
-        }
-        return curriculumMapper.curriculumToCurriculumResult(
-            curriculum.get(),
-        )
+        val curriculum = curriculumRepository.findById(id)
+            .orElseThrow { NoSuchElementException("The Curriculum with the id: $id not found!") }
+
+        return curriculumMapper.curriculumToCurriculumResult(curriculum)
     }
 
     override fun create(curriculumInput: CurriculumInput): CurriculumResult? {
-        val curriculum: Curriculum = curriculumMapper.curriculumInputToCurriculum(curriculumInput)
+        val curriculum = curriculumMapper.curriculumInputToCurriculum(curriculumInput)
+
+        val studentId = curriculumInput.student?.id
+            ?: throw IllegalArgumentException("Student id is required to create a Curriculum")
+
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
+
+        curriculum.student = student
+
         return curriculumMapper.curriculumToCurriculumResult(
             curriculumRepository.save(curriculum)
         )
@@ -452,26 +468,31 @@ class AbstractCurriculumService (
 
     @Throws(NoSuchElementException::class)
     override fun update(curriculumInput: CurriculumInput): CurriculumResult? {
-        val curriculum: Optional<Curriculum> = curriculumRepository.findById(curriculumInput.id!!)
-        if(curriculum.isEmpty){
-            throw NoSuchElementException(String.format("The Curriculum with the id: %s not found!", curriculumInput.id))
+        val existingCurriculum = curriculumRepository.findById(curriculumInput.id!!)
+            .orElseThrow { NoSuchElementException("The Curriculum with the id: ${curriculumInput.id} not found!") }
+
+        curriculumMapper.curriculumInputToCurriculum(curriculumInput, existingCurriculum)
+
+        curriculumInput.student?.id?.let {
+            val student = studentRepository.findById(it)
+                .orElseThrow { NoSuchElementException("Student with id $it not found") }
+            existingCurriculum.student = student
         }
-        val curriculumUpdated: Curriculum = curriculum.get()
-        curriculumMapper.curriculumInputToCurriculum(curriculumInput, curriculumUpdated)
-        return curriculumMapper.curriculumToCurriculumResult(curriculumRepository.save(curriculumUpdated)
+
+        return curriculumMapper.curriculumToCurriculumResult(
+            curriculumRepository.save(existingCurriculum)
         )
     }
 
-
     @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {
-        if(!curriculumRepository.findById(id).isEmpty){
-            curriculumRepository.deleteById(id)
-        }else{
-            throw NoSuchElementException(String.format("The Curriculum with the id: %s not found!", id))
+        if (!curriculumRepository.existsById(id)) {
+            throw NoSuchElementException("The Curriculum with the id: $id not found!")
         }
+        curriculumRepository.deleteById(id)
     }
 }
+
 
 interface EducationService{
     fun findAll(): List<EducationResult>?
