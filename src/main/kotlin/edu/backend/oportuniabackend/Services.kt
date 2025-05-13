@@ -1,9 +1,16 @@
 package edu.backend.oportuniabackend
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.NoSuchElementException
 import java.util.Optional
+import kotlin.text.get
 
 interface UserService {
     fun findAll(): List<UserResult>?
@@ -889,5 +896,42 @@ class AbstractStudentProgressService (
     }
 }
 
+@Service
+@Transactional
+class AppUserDetailsService(
+    @Autowired
+    val userRepository: UserRepository,
+    @Autowired
+    val roleRepository: RoleRepository,
+) : UserDetailsService {
 
+    @Throws(UsernameNotFoundException::class)
+    override fun loadUserByUsername(username: String): UserDetails {
+        val userAuth: org.springframework.security.core.userdetails.User
+        val user: User = userRepository.findByEmail(username).orElse(null)
+            ?: return org.springframework.security.core.userdetails.User(
+                "", "", true, true, true, true,
+                getAuthorities(
+                    listOf(
+                        roleRepository.findByName("ROLE_USER").get()
+                    )
+                )
+            )
+
+        userAuth = org.springframework.security.core.userdetails.User(
+            user.email, user.password, user.enabled == true, true, true, // error
+            true, getAuthorities(user.roles!!.toMutableList())
+        )
+
+        return userAuth
+    }
+
+    private fun getAuthorities(roles: Collection<Role>): Collection<GrantedAuthority> {
+        return roles.flatMap { role ->
+            sequenceOf(SimpleGrantedAuthority(role.name)) +
+                    role.privilegeList.map { privilege -> SimpleGrantedAuthority(privilege.name) }
+        }.toList()
+    }
+
+}
 
