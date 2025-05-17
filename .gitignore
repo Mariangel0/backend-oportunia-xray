@@ -41,5 +41,5 @@ out/
 
 .idea/
 
+src/main/resources/application.properties
 local.properties
-
