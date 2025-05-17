@@ -236,8 +236,9 @@ data class ExperienceInput(
     var title: String? = null,
     var description: String? = null,
     var year: Int? = null,
-    var student: StudentInput? = null,
     var role: String? = null,
+    var student: StudentInput? = null,
+    var company: CompanyInput? = null,
 )
 
 data class ExperienceResult(
@@ -246,6 +247,7 @@ data class ExperienceResult(
     var description: String? = null,
     var year: Int? = null,
     var role: String? = null,
+    var company: CompanyResult,
 )
 
 // Notification
