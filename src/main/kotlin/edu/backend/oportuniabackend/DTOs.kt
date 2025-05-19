@@ -289,7 +289,8 @@ data class StudentProgressInput(
     var totalInterviews: Int? = null,
     var averageScore: Float? = null,
     var uploadedCl: Int? = null,
-    var lasActivity: Date? = null,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    var lastActivity: Date? = null,
 )
 
 data class StudentProgressResult(
@@ -298,5 +299,5 @@ data class StudentProgressResult(
     var totalInterviews: Int? = null,
     var averageScore: Float? = null,
     var uploadedCl: Int? = null,
-    var lasActivity: Date? = null,
+    var lastActivity: Date? = null,
 )

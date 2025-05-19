@@ -927,6 +927,8 @@ class AbstractStudentProgressService (
     val studentProgressRepository: StudentProgressRepository,
     @Autowired
     private val studentProgressMapper: StudentProgressMapper,
+    @Autowired
+    private val studentRepository: StudentRepository,
 ): StudentProgressService {
     override fun findAll(): List<StudentProgressResult>? {
         return studentProgressMapper.studentProgressListToStudentProgressResultList(
@@ -947,6 +949,15 @@ class AbstractStudentProgressService (
 
     override fun create(studentProgressInput: StudentProgressInput): StudentProgressResult? {
         val studentProgress: StudentProgress = studentProgressMapper.studentProgressInputToStudentProgress(studentProgressInput)
+
+        val studentId = studentProgressInput.student?.id
+            ?: throw IllegalArgumentException("Student ID is required")
+
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
+
+        studentProgress.student = student
+
         return studentProgressMapper.studentProgressToStudentProgressResult(
             studentProgressRepository.save(studentProgress)
         )
@@ -954,11 +965,12 @@ class AbstractStudentProgressService (
 
     @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {
-        if (!studentProgressRepository.findById(id).isEmpty) {
-            studentProgressRepository.deleteById(id)
-        } else {
-            throw NoSuchElementException(String.format("The StudentProgress with the id: %s not found!", id))
-        }
+        val studentProgress = studentProgressRepository.findById(id)
+            .orElseThrow { NoSuchElementException("The StudentProgress with the id: $id not found!") }
+
+        studentProgress.student?.studentProgress = null
+
+        studentProgressRepository.delete(studentProgress)
     }
 }
 

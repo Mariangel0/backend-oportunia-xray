@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql
     statements = [
         "DELETE FROM public.companies_reviews",
         "DELETE FROM public.experiences",
+        "DELETE FROM public.student_progress",
         "DELETE FROM public.ia_analysis",
         "DELETE FROM public.interview",
         "DELETE FROM public.curriculums",
@@ -32,7 +33,7 @@ import org.springframework.test.context.jdbc.Sql
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @Sql(
-    scripts = ["/import-users.sql", "/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-experiences.sql" , "/import-interviews.sql","/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql",
+    scripts = ["/import-users.sql", "/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-student_progress.sql", "/import-experiences.sql" , "/import-interviews.sql","/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql",
         "/import-abilities.sql","/import-ia_analysis.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql"],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
@@ -77,7 +78,10 @@ class LoadInitData (
     val experienceRepository: ExperienceRepository,
 
     @Autowired
-    val iaAnalysisRepository: IAAnalysisRepository
+    val iaAnalysisRepository: IAAnalysisRepository,
+
+    @Autowired
+    val studentProgressRepository: StudentProgressRepository
 
     )
 {
@@ -270,6 +274,18 @@ class LoadInitData (
     fun testIAAnalysisFindById() {
         val iaAnalysis: IAAnalysis = iaAnalysisRepository.findById(1).get()
         Assertions.assertTrue(iaAnalysis.id?.toInt() == 1)
+    }
+
+    @Test
+    fun testStudentProgressFindAll(){
+        val studentProgressList: List<StudentProgress> = studentProgressRepository.findAll()
+        Assertions.assertTrue(studentProgressList.size == 3)
+    }
+
+    @Test
+    fun testStudentProgressFindById() {
+        val studentProgress: StudentProgress = studentProgressRepository.findById(1).get()
+        Assertions.assertTrue(studentProgress.id?.toInt() == 1)
     }
 
 }

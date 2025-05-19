@@ -823,12 +823,13 @@ data class StudentProgress(
     @Column(name = "uploaded_cl")
     var uploadedCl: Int,
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "last_activity")
     var lastActivity: Date,
 
     @OneToOne
     @JoinColumn(name = "student_id")
-    var student: Student
+    var student: Student? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

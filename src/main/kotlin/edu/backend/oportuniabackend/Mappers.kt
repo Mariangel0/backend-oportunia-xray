@@ -94,7 +94,10 @@ interface StreakMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface StudentProgressMapper {
     fun studentProgressToStudentProgressResult(studentProgress: StudentProgress): StudentProgressResult
+
+    @Mapping(target = "student", ignore = true)
     fun studentProgressInputToStudentProgress(studentProgressInput: StudentProgressInput): StudentProgress
+
     fun studentProgressListToStudentProgressResultList(studentProgress: List<StudentProgress>): List<StudentProgressResult>
     @Mapping(target = "student", ignore = true)
     fun updateStudentProgressFromInput(studentProgressInput: StudentProgressInput, @MappingTarget studentProgress: StudentProgress)

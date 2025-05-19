@@ -398,7 +398,7 @@ class StreakController(private val streakService: StreakService) {
 }
 
 @RestController
-@RequestMapping("\${url.student_Progresses}")
+@RequestMapping("\${url.studentProgresses}")
 class StudentProgressController(private val notificationService: StudentProgressService) {
 
     @GetMapping
