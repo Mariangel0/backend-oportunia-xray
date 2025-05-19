@@ -1,5 +1,6 @@
 package edu.backend.oportuniabackend
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.util.*
 
 data class PriorityDetails(
@@ -152,35 +153,33 @@ data class IAAnalysisInput(
     var id: Long?=null,
     var recommendation: String?=null,
     var score: Float?=null,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     var date: Date?=null,
-    var interview: InterviewResult,
-    var curriculum: CurriculumResult,
+    var interview: InterviewResult? = null,
+    var curriculum: CurriculumResult? = null,
 )
 
 data class IAAnalysisDetails(
-    var id: Long?=null,
-    var recommendation: String?=null,
+    var id: Long,
+    var recommendation: String,
     var interview: InterviewResult,
     var curriculum: CurriculumResult,
-    var score: Float?=null,
-    var date: Date?=null,
+    var score: Float,
+    var date: Date,
 )
 
 data class CurriculumInput(
     var id: Long?=null,
     var student: StudentInput?=null,
     var archiveUrl: String?=null,
-    var iaAnalysis: IAAnalysisInput? = null,
     var feedback: String?=null,
 )
 
-
 data class CurriculumResult(
-    var id: Long?=null,
-    var archiveUrl: String?=null,
-    var student: StudentInput?=null,
-    var feedback: String?=null,
-    var iaAnalysis: IAAnalysisInput?=null,
+    var id: Long,
+    var archiveUrl: String? = null,
+    var student: StudentInput? = null,
+    var feedback: String? = null,
 )
 
 data class CurriculumAnalysisInput(
@@ -195,21 +194,18 @@ data class InterviewInput(
     var date: Date? = null,
     var result: String? = null,
     var student: StudentInput? = null,
-    var iaAnalysis: IAAnalysisInput? = null
 )
 
 data class InterviewAnalysisInput(
     var id: Long? = null,
     var feedback: String? = null,
-    var iaAnalysis: IAAnalysisInput? = null
 )
 
 data class InterviewResult(
     var id: Long,
-    var date: Date,
-    var result: String,
-    var student: StudentResult,
-    var iaAnalysis: IAAnalysisInput? = null
+    var date: Date? = null,
+    var result: String? = null,
+    var student: StudentResult? = null,
 )
 
 // Education

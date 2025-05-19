@@ -377,6 +377,8 @@ class AbstractAbilityService (
     val abilityRepository: AbilityRepository,
     @Autowired
     private val abilityMapper: AbilityMapper,
+    @Autowired
+    private val studentRepository: StudentRepository
 ): AbilityService {
     override fun findAll(): List<AbilityResult>? {
         return abilityMapper.abilityListToAbilityResultList(
@@ -403,6 +405,15 @@ class AbstractAbilityService (
 
     override fun create(abilityInput: AbilityInput): AbilityResult? {
         val ability: Ability = abilityMapper.abilityInputToAbility(abilityInput)
+
+        val studentId = abilityInput.student?.id
+            ?: throw IllegalArgumentException("Student ID is required")
+
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
+
+        ability.student = student
+
         return abilityMapper.abilityToAbilityResult(
             abilityRepository.save(ability)
         )
@@ -505,6 +516,8 @@ class AbstractEducationService (
     val educationRepository: EducationRepository,
     @Autowired
     private val educationMapper: EducationMapper,
+    @Autowired
+    private val studentRepository: StudentRepository
 ): EducationService {
     override fun findAll(): List<EducationResult>? {
         return educationMapper.educationListToEducationResultList(
@@ -527,6 +540,15 @@ class AbstractEducationService (
 
     override fun create(educationInput: EducationInput): EducationResult? {
         val education: Education = educationMapper.educationInputToEducation(educationInput)
+
+        val studentId = educationInput.student?.id
+            ?: throw IllegalArgumentException("Student ID is required")
+
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
+
+        education.student = student
+
         return educationMapper.educationToEducationResult(
             educationRepository.save(education)
         )
@@ -534,15 +556,22 @@ class AbstractEducationService (
 
     @Throws(NoSuchElementException::class)
     override fun update(educationInput: EducationInput): EducationResult? {
-        val education: Optional<Education> = educationRepository.findById(educationInput.id!!)
-        if(education.isEmpty){
-            throw NoSuchElementException(String.format("The education with the id: %s not found!", educationInput.id))
+        val education = educationRepository.findById(educationInput.id!!)
+            .orElseThrow { NoSuchElementException("The education with the id: ${educationInput.id} not found!") }
+
+        educationMapper.educationInputToEducation(educationInput, education)
+
+        educationInput.student?.id?.let { studentId ->
+            val student = studentRepository.findById(studentId)
+                .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
+            education.student = student
         }
-        val educationUpdated: Education = education.get()
-        educationMapper.educationInputToEducation(educationInput, educationUpdated)
-        return educationMapper.educationToEducationResult(educationRepository.save(educationUpdated)
+
+        return educationMapper.educationToEducationResult(
+            educationRepository.save(education)
         )
     }
+
 
     @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {
@@ -644,6 +673,10 @@ class AbstractIAAnalysisService (
     val iaAnalysisRepository: IAAnalysisRepository,
     @Autowired
     private val iaAnalysisMapper: IAAnalysisMapper,
+    @Autowired
+    private val interviewRepository: InterviewRepository,
+    @Autowired
+    private val curriculumRepository: CurriculumRepository
 ): IAAnalysisService {
     override fun findAll(): List<IAAnalysisDetails>? {
         return iaAnalysisMapper.iaAnalysisListToIAAnalysisDetailsList(
@@ -665,10 +698,18 @@ class AbstractIAAnalysisService (
     }
 
     override fun create(iaAnalysisInput: IAAnalysisInput): IAAnalysisDetails? {
-        val iaAnalysis: IAAnalysis = iaAnalysisMapper.iaAnalysisInputToIAAnalysis(iaAnalysisInput)
-        return iaAnalysisMapper.iaAnalysisToIAAnalysisDetails(
-            iaAnalysisRepository.save(iaAnalysis)
-        )
+        val iaAnalysis = iaAnalysisMapper.iaAnalysisInputToIAAnalysis(iaAnalysisInput)
+
+        val interview = interviewRepository.findById(iaAnalysisInput.interview?.id!!)
+            .orElseThrow { NoSuchElementException("Interview not found") }
+
+        val curriculum = curriculumRepository.findById(iaAnalysisInput.curriculum?.id!!)
+            .orElseThrow { NoSuchElementException("Curriculum not found") }
+
+        iaAnalysis.interview = interview
+        iaAnalysis.curriculum = curriculum
+
+        return iaAnalysisMapper.iaAnalysisToIAAnalysisDetails(iaAnalysisRepository.save(iaAnalysis))
     }
 
     @Throws(NoSuchElementException::class)

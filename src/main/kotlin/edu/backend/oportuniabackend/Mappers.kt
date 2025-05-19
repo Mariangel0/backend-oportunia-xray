@@ -147,7 +147,15 @@ interface CompanyReviewMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface IAAnalysisMapper {
     fun iaAnalysisToIAAnalysisInput(iaAnalysis: IAAnalysis): IAAnalysisInput
+
+    @Mapping(target = "date", defaultExpression = "java(new java.util.Date())")
+    @Mapping(target = "interview", ignore = true)
+    @Mapping(target = "curriculum", ignore = true)
     fun iaAnalysisInputToIAAnalysis(iaAnalysisInput: IAAnalysisInput): IAAnalysis
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    fun iaAnalysisInputToIAAnalysis(dto: IAAnalysisInput, @MappingTarget iaAnalysis: IAAnalysis)
+
     fun iaAnalysisListToIAAnalysisDetailsList(iaAnalysis: List<IAAnalysis>): List<IAAnalysisDetails>
     fun iaAnalysisToIAAnalysisDetails(iaAnalysis: IAAnalysis): IAAnalysisDetails
 
@@ -160,7 +168,6 @@ interface InterviewMapper {
     fun interviewInputToInterview(interviewInput: InterviewInput): Interview
 
     fun interviewListToInterviewResultList(interviews: List<Interview>): List<InterviewResult>
-    @Mapping(target = "iaAnalysis", ignore = true)
     fun updateInterviewFromInput(interviewInput: InterviewInput, @MappingTarget interview: Interview)
 }
 
@@ -202,6 +209,8 @@ interface AdviceMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface EducationMapper {
     fun educationToEducationResult(education: Education): EducationResult
+
+    @Mapping(target = "student", ignore = true)
     fun educationInputToEducation(educationInput: EducationInput): Education
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

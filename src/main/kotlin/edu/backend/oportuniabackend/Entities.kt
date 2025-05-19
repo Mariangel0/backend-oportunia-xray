@@ -1,5 +1,6 @@
 package edu.backend.oportuniabackend
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.util.*
 import jakarta.persistence.*
 
@@ -233,15 +234,16 @@ data class Student(
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + premiun.hashCode()
-        result = 31 * result + description.hashCode()
-        result = 31 * result + linkedinUrl.hashCode()
-        result = 31 * result + githubUrl.hashCode()
-        result = 31 * result + bornDate.hashCode()
-        result = 31 * result + location.hashCode()
-        result = 31 * result + user.hashCode()
-        return result
+//        var result = id.hashCode()
+//        result = 31 * result + premiun.hashCode()
+//        result = 31 * result + description.hashCode()
+//        result = 31 * result + linkedinUrl.hashCode()
+//        result = 31 * result + githubUrl.hashCode()
+//        result = 31 * result + bornDate.hashCode()
+//        result = 31 * result + location.hashCode()
+//        result = 31 * result + user.hashCode()
+//        return result
+        return id?.hashCode() ?: 0
     }
 
     override fun toString(): String {
@@ -489,9 +491,6 @@ data class Curriculum(
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
     var student: Student,
 
-    @OneToOne(mappedBy = "curriculum")
-    var iaAnalysis: IAAnalysis? = null
-
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -618,15 +617,14 @@ data class Interview(
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
 
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     var date: Date,
     var result: String,
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
     var student: Student? = null,
-
-    @OneToOne(mappedBy = "interview")
-    var iaAnalysis: IAAnalysis? = null
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -658,26 +656,29 @@ data class Interview(
 
 
 @Entity
-@Table(name = "IAanalysis")
+@Table(name = "ia_analysis")
 data class IAAnalysis(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
 
-    var recommendations: String,
+    var recommendation: String,
     var score: Float,
+
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern="dd/MM/yyyy")
     var date: Date,
 
     @OneToOne
     @JoinColumn(name = "interview_id", unique = true, referencedColumnName = "id")
-    var interview: Interview,
+    var interview: Interview? = null,
 
     @OneToOne
     @JoinColumn(name = "curriculum_id", unique = true, referencedColumnName = "id")
-    var curriculum: Curriculum
+    var curriculum: Curriculum? = null,
 ) {
     override fun toString(): String {
-        return "IAAnalysis(id=$id, recommendations='$recommendations', score=$score, date=$date, interview=$interview, curriculum=$curriculum)"
+        return "IAAnalysis(id=$id, recommendations='$recommendation, score=$score, date=$date, interview=$interview, curriculum=$curriculum)"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -688,7 +689,7 @@ data class IAAnalysis(
 
         if (id != other.id) return false
         if (score != other.score) return false
-        if (recommendations != other.recommendations) return false
+        if (recommendation != other.recommendation) return false
         if (date != other.date) return false
         if (interview != other.interview) return false
         if (curriculum != other.curriculum) return false
@@ -699,7 +700,7 @@ data class IAAnalysis(
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
         result = 31 * result + score.hashCode()
-        result = 31 * result + recommendations.hashCode()
+        result = 31 * result + recommendation.hashCode()
         result = 31 * result + date.hashCode()
         result = 31 * result + interview.hashCode()
         result = 31 * result + curriculum.hashCode()

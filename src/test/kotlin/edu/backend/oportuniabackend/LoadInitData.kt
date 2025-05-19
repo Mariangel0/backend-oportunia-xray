@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql
     statements = [
         "DELETE FROM public.companies_reviews",
         "DELETE FROM public.experiences",
+        "DELETE FROM public.ia_analysis",
         "DELETE FROM public.interview",
         "DELETE FROM public.curriculums",
         "DELETE FROM public.ability",
@@ -32,7 +33,7 @@ import org.springframework.test.context.jdbc.Sql
 )
 @Sql(
     scripts = ["/import-users.sql", "/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-experiences.sql" , "/import-interviews.sql","/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql",
-        "/import-abilities.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql"],
+        "/import-abilities.sql","/import-ia_analysis.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql"],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 class LoadInitData (
@@ -73,9 +74,10 @@ class LoadInitData (
     val interviewRepository: InterviewRepository,
 
     @Autowired
-    val experienceRepository: ExperienceRepository
+    val experienceRepository: ExperienceRepository,
 
-
+    @Autowired
+    val iaAnalysisRepository: IAAnalysisRepository
 
     )
 {
@@ -259,5 +261,15 @@ class LoadInitData (
         Assertions.assertTrue(experience.id?.toInt() == 1)
     }
 
+    @Test
+    fun testIAAnalysisFindAll(){
+        val iaAnalysisList: List<IAAnalysis> = iaAnalysisRepository.findAll()
+        Assertions.assertTrue(iaAnalysisList.size == 5)
+    }
+    @Test
+    fun testIAAnalysisFindById() {
+        val iaAnalysis: IAAnalysis = iaAnalysisRepository.findById(1).get()
+        Assertions.assertTrue(iaAnalysis.id?.toInt() == 1)
+    }
 
 }
