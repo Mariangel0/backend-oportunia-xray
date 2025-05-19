@@ -764,6 +764,7 @@ data class Streak(
 
     var days: Int,
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "last_activity")
     var lastActivity: Date,
 
@@ -772,7 +773,7 @@ data class Streak(
 
     @OneToOne
     @JoinColumn(name = "student_id")
-    var student: Student
+    var student: Student? = null,
 
 
 ) {

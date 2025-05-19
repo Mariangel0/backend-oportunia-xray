@@ -250,6 +250,8 @@ data class ExperienceResult(
 
 data class NotificationInput(
     var id: Long? = null,
+    var type: String? = null,
+    var read: Boolean? = null,
     var message: String? = null,
     var user: UserInput? = null,
 )
@@ -257,6 +259,7 @@ data class NotificationInput(
 data class NotificationResult(
     var id: Long? = null,
     var message: String? = null,
+    var type: String? = null,
 )
 
 // Streak
@@ -264,6 +267,7 @@ data class NotificationResult(
 data class StreakInput(
     var id: Long? = null,
     var days: Int? = null,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     var lastActivity: Date? = null,
     var bestStreak: Int? = null,
     var student: StudentInput? = null,

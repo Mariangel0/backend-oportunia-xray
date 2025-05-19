@@ -793,6 +793,8 @@ class AbstractNotificationService (
     val notificationRepository: NotificationRepository,
     @Autowired
     private val notificationMapper: NotificationMapper,
+    @Autowired
+    private val userRepository: UserRepository,
 ): NotificationService {
     override fun findAll(): List<NotificationResult>? {
         return notificationMapper.notificationListToNotificationResultList(
@@ -812,11 +814,21 @@ class AbstractNotificationService (
     }
 
     override fun create(notificationInput: NotificationInput): NotificationResult? {
-        val notification: Notification = notificationMapper.notificationInputToNotification(notificationInput)
+        val notification = notificationMapper.notificationInputToNotification(notificationInput)
+
+        val userId = notificationInput.user?.id
+            ?: throw IllegalArgumentException("User ID is required for notification")
+
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("User with id $userId not found") }
+
+        notification.user = user
+
         return notificationMapper.notificationToNotificationResult(
             notificationRepository.save(notification)
         )
     }
+
 
     @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {
@@ -842,6 +854,8 @@ class AbstractStreakService (
     val streakRepository: StreakRepository,
     @Autowired
     private val streakMapper: StreakMapper,
+    @Autowired
+    private val studentRepository: StudentRepository,
 ): StreakService {
     override fun findAll(): List<StreakResult>? {
         return streakMapper.streakListToStreakResultList(
@@ -863,7 +877,16 @@ class AbstractStreakService (
     }
 
     override fun create(streakInput: StreakInput): StreakResult? {
-        val streak: Streak = streakMapper.streakInputToStreak(streakInput)
+        val streak = streakMapper.streakInputToStreak(streakInput)
+
+        val studentId = streakInput.student?.id
+            ?: throw IllegalArgumentException("Student ID is required")
+
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
+
+        streak.student = student
+
         return streakMapper.streakToStreakResult(
             streakRepository.save(streak)
         )
@@ -881,13 +904,13 @@ class AbstractStreakService (
         )
     }
 
-    @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {
-        if(!streakRepository.findById(id).isEmpty){
-            streakRepository.deleteById(id)
-        }else{
-            throw NoSuchElementException(String.format("The Streak with the id: %s not found!", id))
-        }
+        val streak = streakRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Streak with id $id not found") }
+
+        streak.student?.streak = null
+
+        streakRepository.delete(streak)
     }
 }
 

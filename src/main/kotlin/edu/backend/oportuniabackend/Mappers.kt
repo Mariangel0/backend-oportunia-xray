@@ -21,6 +21,7 @@ interface UserMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface StudentMapper {
     fun studentToStudentResult(student: Student): StudentResult
+
     fun studentInputToStudent(studentInput: StudentInput): Student
     @Mapping(target = "user", ignore = true)
     fun updateStudentFromInput(studentInput: StudentInput, @MappingTarget student: Student)
@@ -78,6 +79,8 @@ interface UserLoginMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface StreakMapper {
     fun streakToStreakResult(streak: Streak): StreakResult
+
+    @Mapping(target = "student", ignore = true)
     fun streakInputToStreak(streakInput: StreakInput): Streak
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
