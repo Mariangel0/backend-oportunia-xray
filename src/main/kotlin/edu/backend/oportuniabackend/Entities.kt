@@ -486,6 +486,7 @@ data class Curriculum(
     @Column(name = "archive_url")
     var archiveUrl: String,
 
+    @Column(columnDefinition = "TEXT")
     var feedback: String,
 
     @ManyToOne

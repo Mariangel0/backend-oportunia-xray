@@ -1,7 +1,9 @@
 package edu.backend.oportuniabackend
 
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("\${url.users}")
@@ -222,6 +224,15 @@ class CurriculumController(private val curriculumService: CurriculumService) {
     @ResponseBody
     fun deleteById(@PathVariable id: Long) {
         curriculumService.deleteById(id)
+    }
+
+    @PostMapping("/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadCurriculum(
+        @RequestParam("file") file: MultipartFile,
+        @RequestParam("studentId") studentId: Long
+    ): ResponseEntity<String> {
+        val message = curriculumService.uploadCurriculum(file, studentId)
+        return ResponseEntity.ok(message)
     }
 }
 

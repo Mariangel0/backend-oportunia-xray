@@ -33,6 +33,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	runtimeOnly("org.postgresql:postgresql")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("org.apache.pdfbox:pdfbox:2.0.27")
 }
 
 tasks.withType<KotlinCompile> {
