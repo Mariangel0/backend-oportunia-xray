@@ -122,13 +122,19 @@ data class AbilityInput(
 data class AbilityResult(
     var id: Long?=null,
     var name: String?=null,
-    var student: StudentResult,
+    var student: StudentResult? = null,
 )
 
-data class AdviceDetails(
+data class AdviceInput(
     var id: Long?=null,
     var question: String?=null,
     var answer: String?=null,
+)
+
+data class AdviceDetails(
+    var id: Long,
+    var question: String,
+    var answer: String,
 )
 
 data class CompanyReviewInput(
@@ -137,14 +143,13 @@ data class CompanyReviewInput(
     var rating: Float?=null,
     var company: CompanyInput?=null,
     var student: StudentInput?=null,
+    var createdAt: Date?=null,
 )
 
 data class CompanyReviewResult(
     var id: Long?=null,
     var comment: String?=null,
     var rating: Float?=null,
-    var student: StudentInput?=null,
-    // no se si se necesita company
 )
 
 // INTERVIEW AND CV
@@ -178,7 +183,6 @@ data class CurriculumInput(
 data class CurriculumResult(
     var id: Long,
     var archiveUrl: String? = null,
-    var student: StudentInput? = null,
     var feedback: String? = null,
 )
 
@@ -252,6 +256,7 @@ data class NotificationInput(
     var id: Long? = null,
     var type: String? = null,
     var read: Boolean? = null,
+    var date: Date? = null,
     var message: String? = null,
     var user: UserInput? = null,
 )
@@ -260,6 +265,7 @@ data class NotificationResult(
     var id: Long? = null,
     var message: String? = null,
     var type: String? = null,
+    var date: Date? = null,
 )
 
 // Streak

@@ -22,13 +22,12 @@ import org.springframework.test.context.jdbc.Sql
         "DELETE FROM public.education",
         "DELETE FROM public.notification",
         "DELETE FROM public.streaks",
-        "DELETE FROM public.student",
-        "DELETE FROM public.advices",
-        "DELETE FROM public.admin",
         "DELETE FROM public.companies",
+        "DELETE FROM public.student",
+        "DELETE FROM public.admin",
+        "DELETE FROM public.advices",
         "DELETE FROM public.users",
-        "DELETE FROM public.role",
-
+        "DELETE FROM public.role"
     ],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
@@ -89,7 +88,7 @@ class LoadInitData (
     @Test
     fun testUserFindAll(){
         val userList: List<User> = userRepository.findAll()
-        Assertions.assertTrue(userList.size == 5)
+        Assertions.assertTrue(userList.size == 6)
     }
 
     @Test

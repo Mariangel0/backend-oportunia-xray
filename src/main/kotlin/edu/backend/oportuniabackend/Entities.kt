@@ -360,7 +360,7 @@ data class Ability(
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
-    var student: Student
+    var student: Student? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -392,6 +392,7 @@ data class Ability(
 @Table(name = "advices")
 data class Advice(
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long,
 
     var question: String,
@@ -438,11 +439,11 @@ data class CompanyReview(
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
-    var student: Student,
+    var student: Student? = null,
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "id")
-    var company: Company
+    var company: Company? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -489,7 +490,7 @@ data class Curriculum(
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
-    var student: Student,
+    var student: Student? = null,
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -532,7 +533,7 @@ data class Education(
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
-    var student: Student,
+    var student: Student? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -575,11 +576,11 @@ data class Experience(
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
-    var student: Student,
+    var student: Student? = null,
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "id")
-    var company: Company
+    var company: Company? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

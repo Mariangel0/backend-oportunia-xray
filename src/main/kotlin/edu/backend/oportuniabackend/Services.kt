@@ -20,13 +20,13 @@ interface UserService {
 }
 
 @Service
-class AbstractUserService (
+class AbstractUserService(
     @Autowired
     private val userRepository: UserRepository,
 
     @Autowired
     private val userMapper: UserMapper,
-): UserService {
+) : UserService {
 
     override fun findAll(): List<UserResult>? {
         return userMapper.userListToUserListResult(userRepository.findAll())
@@ -47,7 +47,12 @@ class AbstractUserService (
     override fun findByEmail(email: String): UserResult? {
         val user: Optional<User> = userRepository.findByEmail(email)
         if (user.isEmpty) {
-            throw NoSuchElementException(String.format("The user with the email: %s not found!", email))
+            throw NoSuchElementException(
+                String.format(
+                    "The user with the email: %s not found!",
+                    email
+                )
+            )
         }
         return userMapper.userToUserResult(
             user.get(),
@@ -64,7 +69,12 @@ class AbstractUserService (
     override fun updateUser(id: Long, userInput: UserInput): UserResult? {
         val user: Optional<User> = userRepository.findById(userInput.id!!)
         if (user.isEmpty) {
-            throw NoSuchElementException(String.format("The USER with the id: %s not found!", userInput.id))
+            throw NoSuchElementException(
+                String.format(
+                    "The USER with the id: %s not found!",
+                    userInput.id
+                )
+            )
         }
         val userUpdated: User = user.get()
         userMapper.updateUserFromInput(userInput, userUpdated)
@@ -96,14 +106,14 @@ interface StudentService {
 }
 
 @Service
-class AbstractStudentService (
+class AbstractStudentService(
     @Autowired
     private val studentRepository: StudentRepository,
 
     @Autowired
     private val studentMapper: StudentMapper,
 
-    ): StudentService {
+    ) : StudentService {
 
     override fun findAll(): List<StudentResult>? {
         return studentMapper.studentListToStudentListResult(
@@ -170,12 +180,12 @@ interface AdminService {
 }
 
 @Service
-class AbstractAdminService (
+class AbstractAdminService(
     @Autowired
     private val adminRepository: AdminRepository,
     @Autowired
     private val adminMapper: AdminMapper,
-): AdminService {
+) : AdminService {
 
     override fun findAll(): List<AdminInput>? {
         return adminMapper.adminListToAdminListResult(
@@ -188,8 +198,10 @@ class AbstractAdminService (
         val admin: Optional<Admin> = adminRepository.findById(id)
         if (admin.isEmpty) {
             throw NoSuchElementException(
-                String.format("The admin with the id: %s not found!", id))}
-        return adminMapper.adminToAdminInput(admin.get(),)
+                String.format("The admin with the id: %s not found!", id)
+            )
+        }
+        return adminMapper.adminToAdminInput(admin.get())
     }
 
     override fun createAdmin(adminInput: AdminInput): AdminResult? {
@@ -232,67 +244,70 @@ interface CompanyService {
 }
 
 @Service
-class AbstractCompanyService (
+class AbstractCompanyService(
     @Autowired
     private val companyRepository: CompanyRepository,
     @Autowired
     private val companyMapper: CompanyMapper,
 
-    ): CompanyService {
+    ) : CompanyService {
 
-        override fun findAll(): List<CompanyResult>? {
-            return companyMapper.companyListToCompanyListResult(
-                (companyRepository.findAll())
+    override fun findAll(): List<CompanyResult>? {
+        return companyMapper.companyListToCompanyListResult(
+            (companyRepository.findAll())
+        )
+
+    }
+
+    override fun findAllInfo(): List<CompanyResultLarge>? {
+        return companyMapper.companyListToCompanyListResultLarge(
+            (companyRepository.findAll())
+        )
+    }
+
+    @Throws(NoSuchElementException::class)
+    override fun findById(id: Long): CompanyResult? {
+        val company: Optional<Company> = companyRepository.findById(id)
+        if (company.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The company with the id: %s not found!", id))
+        }
+        return companyMapper.companyToCompanyResult(company.get())
+
+    }
+
+    override fun createCompany(companyInput: CompanyInput): CompanyResult? {
+        return companyMapper.companyToCompanyResult(
+            companyRepository.save(companyMapper.companyInputToCompany(companyInput))
+        )
+    }
+
+    @Throws(NoSuchElementException::class)
+    override fun updateCompany(id: Long, companyInput: CompanyInput): CompanyResult? {
+        val company: Optional<Company> = companyRepository.findById(companyInput.id!!)
+        if (company.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The company with the id: %s not found!", companyInput.id)) }
+        val companyUpdated: Company = company.get()
+        companyMapper.updateCompanyFromInput(companyInput, companyUpdated)
+        return companyMapper.companyToCompanyResult(companyRepository.save(companyUpdated))
+    }
+
+    @Throws(NoSuchElementException::class)
+    override fun deleteCompany(id: Long) {
+        if (!companyRepository.findById(id).isEmpty) {
+            companyRepository.deleteById(id)
+        } else {
+            throw NoSuchElementException(
+                String.format("The company with the id: %s not found!", id)
             )
-
-        }
-
-        override fun findAllInfo(): List<CompanyResultLarge>? {
-            return companyMapper.companyListToCompanyListResultLarge(
-                (companyRepository.findAll())
-            )
-        }
-
-        @Throws(NoSuchElementException::class)
-        override fun findById(id: Long): CompanyResult? {
-            val company: Optional<Company> = companyRepository.findById(id)
-            if (company.isEmpty) {
-                throw NoSuchElementException(String.format("The company with the id: %s not found!", id))
-            }
-            return companyMapper.companyToCompanyResult(company.get())
-
-        }
-
-        override fun createCompany(companyInput: CompanyInput): CompanyResult? {
-            return companyMapper.companyToCompanyResult(
-                companyRepository.save(companyMapper.companyInputToCompany(companyInput))
-            )
-        }
-
-        @Throws(NoSuchElementException::class)
-        override fun updateCompany(id: Long, companyInput: CompanyInput): CompanyResult? {
-            val company: Optional<Company> = companyRepository.findById(companyInput.id!!)
-            if (company.isEmpty) {
-                throw NoSuchElementException(String.format("The company with the id: %s not found!", companyInput.id))
-            }
-            val companyUpdated: Company = company.get()
-            companyMapper.updateCompanyFromInput(companyInput, companyUpdated)
-            return companyMapper.companyToCompanyResult(companyRepository.save(companyUpdated))
-        }
-
-        @Throws(NoSuchElementException::class)
-        override fun deleteCompany(id: Long) {
-            if (!companyRepository.findById(id).isEmpty) {
-                companyRepository.deleteById(id)
-            } else {
-                throw NoSuchElementException(
-                    String.format("The company with the id: %s not found!", id)
-                )
-            }
-
         }
 
     }
+
+}
 
 interface CompanyReviewService {
     fun findAll(): List<CompanyReviewResult>?
@@ -303,7 +318,7 @@ interface CompanyReviewService {
 }
 
 @Service
-class AbstractCompanyReviewService (
+class AbstractCompanyReviewService(
     @Autowired
     private val companyReviewRepository: CompanyReviewRepository,
     @Autowired
@@ -313,19 +328,21 @@ class AbstractCompanyReviewService (
     @Autowired
     private var studentRepository: StudentRepository
 
-    ): CompanyReviewService {
+) : CompanyReviewService {
 
     override fun findAll(): List<CompanyReviewResult>? {
         return companyReviewMapper.companyReviewListToCompanyReviewResultList(
             (companyReviewRepository.findAll())
         )
     }
+
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): CompanyReviewResult? {
         val companyReview: Optional<CompanyReview> = companyReviewRepository.findById(id)
         if (companyReview.isEmpty) {
-            throw NoSuchElementException(String.format("The company review with the id: %s not found!", id))
-        }
+            throw NoSuchElementException(
+                String.format(
+                    "The company review with the id: %s not found!", id)) }
         return companyReviewMapper.companyReviewToCompanyReviewResult(companyReview.get())
     }
 
@@ -339,18 +356,33 @@ class AbstractCompanyReviewService (
             entity.student = studentRepository.findById(it)
                 .orElseThrow { NoSuchElementException("Student with id $it not found") }
         }
-        return companyReviewMapper.companyReviewToCompanyReviewResult(companyReviewRepository.save(entity))
+        return companyReviewMapper.companyReviewToCompanyReviewResult(
+            companyReviewRepository.save(entity)
+        )
     }
 
     @Throws(NoSuchElementException::class)
-    override fun updateCompanyReview(id: Long, companyReviewInput: CompanyReviewInput): CompanyReviewResult? {
-        val companyReview: Optional<CompanyReview> = companyReviewRepository.findById(companyReviewInput.id!!)
+    override fun updateCompanyReview(
+        id: Long,
+        companyReviewInput: CompanyReviewInput
+    ): CompanyReviewResult? {
+        val companyReview: Optional<CompanyReview> =
+            companyReviewRepository.findById(companyReviewInput.id!!)
         if (companyReview.isEmpty) {
-            throw NoSuchElementException(String.format("The company review with the id: %s not found!", companyReviewInput.id))
+            throw NoSuchElementException(
+                String.format(
+                    "The company review with the id: %s not found!",
+                    companyReviewInput.id
+                )
+            )
         }
         val companyReviewUpdated: CompanyReview = companyReview.get()
         companyReviewMapper.updateCompanyReviewFromInput(companyReviewInput, companyReviewUpdated)
-        return companyReviewMapper.companyReviewToCompanyReviewResult(companyReviewRepository.save(companyReviewUpdated))
+        return companyReviewMapper.companyReviewToCompanyReviewResult(
+            companyReviewRepository.save(
+                companyReviewUpdated
+            )
+        )
     }
 
     @Throws(NoSuchElementException::class)
@@ -358,12 +390,17 @@ class AbstractCompanyReviewService (
         if (!companyReviewRepository.findById(id).isEmpty) {
             companyReviewRepository.deleteById(id)
         } else {
-            throw NoSuchElementException(String.format("The company review with the id: %s not found!", id))
+            throw NoSuchElementException(
+                String.format(
+                    "The company review with the id: %s not found!",
+                    id
+                )
+            )
         }
     }
 }
 
-interface AbilityService{
+interface AbilityService {
     fun findAll(): List<AbilityResult>?
     fun findById(id: Long): AbilityResult?
     fun findByStudentId(studentId: Long): List<AbilityResult>?
@@ -372,14 +409,14 @@ interface AbilityService{
 }
 
 @Service
-class AbstractAbilityService (
+class AbstractAbilityService(
     @Autowired
     val abilityRepository: AbilityRepository,
     @Autowired
     private val abilityMapper: AbilityMapper,
     @Autowired
     private val studentRepository: StudentRepository
-): AbilityService {
+) : AbilityService {
     override fun findAll(): List<AbilityResult>? {
         return abilityMapper.abilityListToAbilityResultList(
             abilityRepository.findAll()
@@ -389,8 +426,13 @@ class AbstractAbilityService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): AbilityResult? {
         val ability: Optional<Ability> = abilityRepository.findById(id)
-        if(ability.isEmpty){
-            throw NoSuchElementException(String.format("The Ability with the id: %s not found!", id))
+        if (ability.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The Ability with the id: %s not found!",
+                    id
+                )
+            )
         }
         return abilityMapper.abilityToAbilityResult(
             ability.get()
@@ -424,12 +466,17 @@ class AbstractAbilityService (
         if (!abilityRepository.findById(id).isEmpty) {
             abilityRepository.deleteById(id)
         } else {
-            throw NoSuchElementException(String.format("The Ability with the id: %s not found!", id))
+            throw NoSuchElementException(
+                String.format(
+                    "The Ability with the id: %s not found!",
+                    id
+                )
+            )
         }
     }
 }
 
-interface CurriculumService{
+interface CurriculumService {
     fun findAll(): List<CurriculumResult>?
     fun findById(id: Long): CurriculumResult?
     fun create(curriculumInput: CurriculumInput): CurriculumResult?
@@ -502,7 +549,7 @@ class AbstractCurriculumService(
 }
 
 
-interface EducationService{
+interface EducationService {
     fun findAll(): List<EducationResult>?
     fun findById(id: Long): EducationResult?
     fun create(educationInput: EducationInput): EducationResult?
@@ -511,14 +558,14 @@ interface EducationService{
 }
 
 @Service
-class AbstractEducationService (
+class AbstractEducationService(
     @Autowired
     val educationRepository: EducationRepository,
     @Autowired
     private val educationMapper: EducationMapper,
     @Autowired
     private val studentRepository: StudentRepository
-): EducationService {
+) : EducationService {
     override fun findAll(): List<EducationResult>? {
         return educationMapper.educationListToEducationResultList(
             educationRepository.findAll()
@@ -531,7 +578,9 @@ class AbstractEducationService (
         if (education.isEmpty) {
             throw NoSuchElementException(
                 String.format(
-                    "The education with the id: %s not found!", id))
+                    "The education with the id: %s not found!", id
+                )
+            )
         }
         return educationMapper.educationToEducationResult(
             education.get(),
@@ -539,14 +588,13 @@ class AbstractEducationService (
     }
 
     override fun create(educationInput: EducationInput): EducationResult? {
-        val education: Education = educationMapper.educationInputToEducation(educationInput)
-
         val studentId = educationInput.student?.id
             ?: throw IllegalArgumentException("Student ID is required")
 
         val student = studentRepository.findById(studentId)
             .orElseThrow { NoSuchElementException("Student with id $studentId not found") }
 
+        val education = educationMapper.educationInputToEducation(educationInput)
         education.student = student
 
         return educationMapper.educationToEducationResult(
@@ -575,15 +623,20 @@ class AbstractEducationService (
 
     @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {
-        if(!educationRepository.findById(id).isEmpty){
+        if (!educationRepository.findById(id).isEmpty) {
             educationRepository.deleteById(id)
-        }else{
-            throw NoSuchElementException(String.format("The education with the id: %s not found!", id))
+        } else {
+            throw NoSuchElementException(
+                String.format(
+                    "The education with the id: %s not found!",
+                    id
+                )
+            )
         }
     }
 }
 
-interface ExperienceService{
+interface ExperienceService {
     fun findAll(): List<ExperienceResult>?
     fun findById(id: Long): ExperienceResult?
     fun findByStudentId(studentId: Long): List<ExperienceResult>?
@@ -593,14 +646,14 @@ interface ExperienceService{
 }
 
 @Service
-class AbstractExperienceService (
+class AbstractExperienceService(
     @Autowired
     val experienceRepository: ExperienceRepository,
     @Autowired
     private val experienceMapper: ExperienceMapper,
     private val studentRepository: StudentRepository,
     private val companyRepository: CompanyRepository
-): ExperienceService {
+) : ExperienceService {
     override fun findAll(): List<ExperienceResult>? {
         return experienceMapper.experienceListToExperienceResultList(
             experienceRepository.findAll()
@@ -610,8 +663,13 @@ class AbstractExperienceService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): ExperienceResult? {
         val experience: Optional<Experience> = experienceRepository.findById(id)
-        if(experience.isEmpty){
-            throw NoSuchElementException(String.format("The Experience with the id: %s not found!", id))
+        if (experience.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The Experience with the id: %s not found!",
+                    id
+                )
+            )
         }
         return experienceMapper.experienceToExperienceResult(
             experience.get()
@@ -641,12 +699,18 @@ class AbstractExperienceService (
     @Throws(NoSuchElementException::class)
     override fun update(experienceInput: ExperienceInput): ExperienceResult? {
         val experience: Optional<Experience> = experienceRepository.findById(experienceInput.id!!)
-        if(experience.isEmpty){
-            throw NoSuchElementException(String.format("The Experience with the id: %s not found!", experienceInput.id))
+        if (experience.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The Experience with the id: %s not found!",
+                    experienceInput.id
+                )
+            )
         }
         val experienceUpdated: Experience = experience.get()
         experienceMapper.experienceInputToExperience(experienceInput, experienceUpdated)
-        return experienceMapper.experienceToExperienceResult(experienceRepository.save(experienceUpdated)
+        return experienceMapper.experienceToExperienceResult(
+            experienceRepository.save(experienceUpdated)
         )
     }
 
@@ -655,12 +719,17 @@ class AbstractExperienceService (
         if (!experienceRepository.findById(id).isEmpty) {
             experienceRepository.deleteById(id)
         } else {
-            throw NoSuchElementException(String.format("The Experience with the id: %s not found!", id))
+            throw NoSuchElementException(
+                String.format(
+                    "The Experience with the id: %s not found!",
+                    id
+                )
+            )
         }
     }
 }
 
-interface IAAnalysisService{
+interface IAAnalysisService {
     fun findAll(): List<IAAnalysisDetails>?
     fun findById(id: Long): IAAnalysisDetails?
     fun create(iaAnalysisInput: IAAnalysisInput): IAAnalysisDetails?
@@ -668,7 +737,7 @@ interface IAAnalysisService{
 }
 
 @Service
-class AbstractIAAnalysisService (
+class AbstractIAAnalysisService(
     @Autowired
     val iaAnalysisRepository: IAAnalysisRepository,
     @Autowired
@@ -677,7 +746,7 @@ class AbstractIAAnalysisService (
     private val interviewRepository: InterviewRepository,
     @Autowired
     private val curriculumRepository: CurriculumRepository
-): IAAnalysisService {
+) : IAAnalysisService {
     override fun findAll(): List<IAAnalysisDetails>? {
         return iaAnalysisMapper.iaAnalysisListToIAAnalysisDetailsList(
             iaAnalysisRepository.findAll()
@@ -690,7 +759,9 @@ class AbstractIAAnalysisService (
         if (iaAnalysis.isEmpty) {
             throw NoSuchElementException(
                 String.format(
-                    "The IAAnalysis with the id: %s not found!", id))
+                    "The IAAnalysis with the id: %s not found!", id
+                )
+            )
         }
         return iaAnalysisMapper.iaAnalysisToIAAnalysisDetails(
             iaAnalysis.get(),
@@ -714,15 +785,20 @@ class AbstractIAAnalysisService (
 
     @Throws(NoSuchElementException::class)
     override fun deleteById(id: Long) {
-        if(!iaAnalysisRepository.findById(id).isEmpty){
+        if (!iaAnalysisRepository.findById(id).isEmpty) {
             iaAnalysisRepository.deleteById(id)
-        }else{
-            throw NoSuchElementException(String.format("The IAAnalysis with the id: %s not found!", id))
+        } else {
+            throw NoSuchElementException(
+                String.format(
+                    "The IAAnalysis with the id: %s not found!",
+                    id
+                )
+            )
         }
     }
 }
 
-interface InterviewService{
+interface InterviewService {
     fun findAll(): List<InterviewResult>?
     fun findById(id: Long): InterviewResult?
     fun create(interviewInput: InterviewInput): InterviewResult?
@@ -730,14 +806,14 @@ interface InterviewService{
 }
 
 @Service
-class AbstractInterviewService (
+class AbstractInterviewService(
     @Autowired
     val interviewRepository: InterviewRepository,
     @Autowired
     private val interviewMapper: InterviewMapper,
     @Autowired
     private val studentRepository: StudentRepository
-): InterviewService {
+) : InterviewService {
     override fun findAll(): List<InterviewResult>? {
         return interviewMapper.interviewListToInterviewResultList(
             interviewRepository.findAll()
@@ -747,8 +823,13 @@ class AbstractInterviewService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): InterviewResult? {
         val interview: Optional<Interview> = interviewRepository.findById(id)
-        if(interview.isEmpty){
-            throw NoSuchElementException(String.format("The Interview with the id: %s not found!", id))
+        if (interview.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The Interview with the id: %s not found!",
+                    id
+                )
+            )
         }
         return interviewMapper.interviewToInterviewResult(
             interview.get()
@@ -775,12 +856,17 @@ class AbstractInterviewService (
         if (!interviewRepository.findById(id).isEmpty) {
             interviewRepository.deleteById(id)
         } else {
-            throw NoSuchElementException(String.format("The Interview with the id: %s not found!", id))
+            throw NoSuchElementException(
+                String.format(
+                    "The Interview with the id: %s not found!",
+                    id
+                )
+            )
         }
     }
 }
 
-interface NotificationService{
+interface NotificationService {
     fun findAll(): List<NotificationResult>?
     fun findById(id: Long): NotificationResult?
     fun create(notificationInput: NotificationInput): NotificationResult?
@@ -788,14 +874,14 @@ interface NotificationService{
 }
 
 @Service
-class AbstractNotificationService (
+class AbstractNotificationService(
     @Autowired
     val notificationRepository: NotificationRepository,
     @Autowired
     private val notificationMapper: NotificationMapper,
     @Autowired
     private val userRepository: UserRepository,
-): NotificationService {
+) : NotificationService {
     override fun findAll(): List<NotificationResult>? {
         return notificationMapper.notificationListToNotificationResultList(
             notificationRepository.findAll()
@@ -805,8 +891,13 @@ class AbstractNotificationService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): NotificationResult? {
         val notification: Optional<Notification> = notificationRepository.findById(id)
-        if(notification.isEmpty){
-            throw NoSuchElementException(String.format("The Notification with the id: %s not found!", id))
+        if (notification.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The Notification with the id: %s not found!",
+                    id
+                )
+            )
         }
         return notificationMapper.notificationToNotificationResult(
             notification.get()
@@ -835,12 +926,17 @@ class AbstractNotificationService (
         if (!notificationRepository.findById(id).isEmpty) {
             notificationRepository.deleteById(id)
         } else {
-            throw NoSuchElementException(String.format("The Notification with the id: %s not found!", id))
+            throw NoSuchElementException(
+                String.format(
+                    "The Notification with the id: %s not found!",
+                    id
+                )
+            )
         }
     }
 }
 
-interface StreakService{
+interface StreakService {
     fun findAll(): List<StreakResult>?
     fun findById(id: Long): StreakResult?
     fun create(streakInput: StreakInput): StreakResult?
@@ -849,14 +945,14 @@ interface StreakService{
 }
 
 @Service
-class AbstractStreakService (
+class AbstractStreakService(
     @Autowired
     val streakRepository: StreakRepository,
     @Autowired
     private val streakMapper: StreakMapper,
     @Autowired
     private val studentRepository: StudentRepository,
-): StreakService {
+) : StreakService {
     override fun findAll(): List<StreakResult>? {
         return streakMapper.streakListToStreakResultList(
             streakRepository.findAll()
@@ -869,7 +965,9 @@ class AbstractStreakService (
         if (streak.isEmpty) {
             throw NoSuchElementException(
                 String.format(
-                    "The Streak with the id: %s not found!", id))
+                    "The Streak with the id: %s not found!", id
+                )
+            )
         }
         return streakMapper.streakToStreakResult(
             streak.get(),
@@ -895,12 +993,18 @@ class AbstractStreakService (
     @Throws(NoSuchElementException::class)
     override fun update(streakInput: StreakInput): StreakResult? {
         val streak: Optional<Streak> = streakRepository.findById(streakInput.id!!)
-        if(streak.isEmpty){
-            throw NoSuchElementException(String.format("The Streak with the id: %s not found!", streakInput.id))
+        if (streak.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The Streak with the id: %s not found!",
+                    streakInput.id
+                )
+            )
         }
         val streakUpdated: Streak = streak.get()
         streakMapper.streakInputToStreak(streakInput, streakUpdated)
-        return streakMapper.streakToStreakResult(streakRepository.save(streakUpdated)
+        return streakMapper.streakToStreakResult(
+            streakRepository.save(streakUpdated)
         )
     }
 
@@ -914,7 +1018,7 @@ class AbstractStreakService (
     }
 }
 
-interface StudentProgressService{
+interface StudentProgressService {
     fun findAll(): List<StudentProgressResult>?
     fun findById(id: Long): StudentProgressResult?
     fun create(studentProgressInput: StudentProgressInput): StudentProgressResult?
@@ -922,14 +1026,14 @@ interface StudentProgressService{
 }
 
 @Service
-class AbstractStudentProgressService (
+class AbstractStudentProgressService(
     @Autowired
     val studentProgressRepository: StudentProgressRepository,
     @Autowired
     private val studentProgressMapper: StudentProgressMapper,
     @Autowired
     private val studentRepository: StudentRepository,
-): StudentProgressService {
+) : StudentProgressService {
     override fun findAll(): List<StudentProgressResult>? {
         return studentProgressMapper.studentProgressListToStudentProgressResultList(
             studentProgressRepository.findAll()
@@ -939,8 +1043,13 @@ class AbstractStudentProgressService (
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): StudentProgressResult? {
         val studentProgress: Optional<StudentProgress> = studentProgressRepository.findById(id)
-        if(studentProgress.isEmpty){
-            throw NoSuchElementException(String.format("The StudentProgress with the id: %s not found!", id))
+        if (studentProgress.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "The StudentProgress with the id: %s not found!",
+                    id
+                )
+            )
         }
         return studentProgressMapper.studentProgressToStudentProgressResult(
             studentProgress.get()
@@ -948,7 +1057,8 @@ class AbstractStudentProgressService (
     }
 
     override fun create(studentProgressInput: StudentProgressInput): StudentProgressResult? {
-        val studentProgress: StudentProgress = studentProgressMapper.studentProgressInputToStudentProgress(studentProgressInput)
+        val studentProgress: StudentProgress =
+            studentProgressMapper.studentProgressInputToStudentProgress(studentProgressInput)
 
         val studentId = studentProgressInput.student?.id
             ?: throw IllegalArgumentException("Student ID is required")
@@ -974,5 +1084,55 @@ class AbstractStudentProgressService (
     }
 }
 
+interface AdviceService {
+    fun findAll(): List<AdviceDetails>?
+    fun findById(id: Long): AdviceDetails?
+    fun createAdvice(adviceInput: AdviceInput): AdviceDetails?
+    fun deleteAdvice(id: Long)
+}
 
+@Service
+class AbstractAdviceService(
+    @Autowired
+    val adviceRepository: AdviceRepository,
+    @Autowired
+    private val adviceMapper: AdviceMapper,
+) : AdviceService {
 
+    override fun findAll(): List<AdviceDetails>? {
+        return adviceMapper.adviceListToAdviceDetailsList(
+            adviceRepository.findAll()
+        )
+    }
+
+    @Throws(NoSuchElementException::class)
+    override fun findById(id: Long): AdviceDetails? {
+        val advice: Optional<Advice> = adviceRepository.findById(id)
+        if (advice.isEmpty) {
+            throw NoSuchElementException(
+                String.format(
+                    "Advice with the id: %s not found!", id)
+            )
+        }
+        return adviceMapper.adviceToAdviceDetails(
+            advice.get()
+        )
+    }
+
+    override fun createAdvice(adviceInput: AdviceInput): AdviceDetails? {
+        val advice: Advice = adviceMapper.adviceInputToAdvice(adviceInput)
+
+        return adviceMapper.adviceToAdviceDetails(
+            adviceRepository.save(advice)
+        )
+    }
+
+    @Throws(NoSuchElementException::class)
+    override fun deleteAdvice(id: Long) {
+        if (!adviceRepository.findById(id).isEmpty) {
+            adviceRepository.deleteById(id)
+        } else {
+            throw NoSuchElementException(String.format("Advice with the id: %s not found!", id))
+        }
+    }
+}

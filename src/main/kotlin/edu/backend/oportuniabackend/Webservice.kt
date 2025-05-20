@@ -268,7 +268,7 @@ class ExperienceController(private val experienceService: ExperienceService) {
     @ResponseBody
     fun findById(@PathVariable id: Long) = experienceService.findById(id)
 
-    @GetMapping("students/{studentId}")
+    @GetMapping("student/{studentId}")
     @ResponseBody
     fun findByStudentId(@PathVariable studentId: Long) = experienceService.findByStudentId(studentId)
 
@@ -419,5 +419,27 @@ class StudentProgressController(private val notificationService: StudentProgress
     @ResponseBody
     fun deleteById(@PathVariable id: Long) {
         notificationService.deleteById(id)
+    }
+}
+
+@RestController
+@RequestMapping("\${url.advices}")
+class AdviceController(private val adviceService: AdviceService) {
+
+    @GetMapping
+    @ResponseBody
+    fun findAll() = adviceService.findAll()
+
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun create(@RequestBody adviceInput: AdviceInput): AdviceDetails? {
+        return adviceService.createAdvice(adviceInput)
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseBody
+    fun deleteById(@PathVariable id: Long) {
+        adviceService.deleteAdvice(id)
     }
 }

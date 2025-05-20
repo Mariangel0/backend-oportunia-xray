@@ -51,6 +51,7 @@ interface ExperienceMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface AbilityMapper {
     fun abilityToAbilityResult(ability: Ability): AbilityResult
+    @Mapping(target = "student", ignore = true)
     fun abilityInputToAbility(abilityInput: AbilityInput): Ability
     fun abilityListToAbilityResultList(abilities: List<Ability>): List<AbilityResult>
     @Mapping(target = "student", ignore = true)
@@ -106,6 +107,7 @@ interface StudentProgressMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface NotificationMapper {
     fun notificationToNotificationResult(notification: Notification): NotificationResult
+    @Mapping(target = "date", defaultExpression = "java(new java.util.Date())")
     fun notificationInputToNotification(notificationInput: NotificationInput): Notification
     fun notificationListToNotificationResultList(notifications: List<Notification>): List<NotificationResult>
     @Mapping(target = "user", ignore = true)
@@ -138,9 +140,13 @@ interface CompanyMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CompanyReviewMapper {
     fun companyReviewToCompanyReviewResult(companyReview: CompanyReview): CompanyReviewResult
+
+    @Mapping(target = "createdAt", defaultExpression = "java(new java.util.Date())")
     @Mapping(target = "company", ignore = true)
     @Mapping(target = "student", ignore = true)
     fun companyReviewInputToCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReview
+
+    @Mapping(target = "createdAt", defaultExpression = "java(new java.util.Date())")
     @Mapping(target = "student", ignore = true)
     @Mapping(target = "company", ignore = true)
     fun updateCompanyReviewFromInput(companyReviewInput: CompanyReviewInput, @MappingTarget companyReview: CompanyReview)
@@ -207,7 +213,9 @@ interface CurriculumAnalysisMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface AdviceMapper {
     fun adviceToAdviceDetails(advice: Advice): AdviceDetails
-    //fun adviceInputToAdvice(adviceInput: AdviceInput): Advice
+    fun adviceInputToAdvice(adviceInput: AdviceInput): Advice
+    fun adviceListToAdviceDetailsList(advices: List<Advice>): List<AdviceDetails>
+
 }
 
 // Education
