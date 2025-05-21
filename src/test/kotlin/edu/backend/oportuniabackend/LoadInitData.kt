@@ -24,8 +24,14 @@ import org.springframework.test.context.jdbc.Sql
         "DELETE FROM public.advices",
         "DELETE FROM public.admin",
         "DELETE FROM public.companies",
+        "DELETE FROM public.user_role",
         "DELETE FROM public.users",
+        "DELETE FROM public.role_privilege",
         "DELETE FROM public.role",
+        "DELETE FROM public.privilege",
+
+
+
 
     ],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -77,7 +83,7 @@ class LoadInitData (
 
 
 
-    )
+)
 {
     // Users
     @Test

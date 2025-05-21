@@ -32,8 +32,8 @@ data class UserInput(
 )
 
 data class UserLoginInput(
-    var username: String,
-    var password: String,
+    var username: String = "",
+    var password: String = "",
 )
 
 data class UserResult(

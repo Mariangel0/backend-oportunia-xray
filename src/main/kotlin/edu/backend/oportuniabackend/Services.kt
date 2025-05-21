@@ -913,7 +913,7 @@ class AppUserDetailsService(
                 "", "", true, true, true, true,
                 getAuthorities(
                     listOf(
-                        roleRepository.findByName("ROLE_USER").get()
+                        roleRepository.findByName("USER").get()
                     )
                 )
             )
@@ -934,4 +934,3 @@ class AppUserDetailsService(
     }
 
 }
-

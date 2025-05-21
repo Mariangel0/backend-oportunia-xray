@@ -1,5 +1,6 @@
 package edu.backend.oportuniabackend
 
+import edu.backend.oportuniabackend.AppCustomDsl.Companion.customDsl
 import jakarta.annotation.Resource
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

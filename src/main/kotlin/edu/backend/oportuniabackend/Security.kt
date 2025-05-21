@@ -30,7 +30,9 @@ object SecurityConstants {
     const val TOKEN_PREFIX = "Bearer "
     const val APPLICATION_JSON = "application/json"
     const val UTF_8 = "UTF-8"
-    const val TOKEN_SECRET: String = "fc3d12cdd30f8e0b6e3dfd1eaaf92e7f15d0574c6b8e3bc0b2d3a3f4d4fc7c53"
+    const val TOKEN_SECRET: String =
+        "======================MikeEducationMikeEducationMikeEducationMikeEducationMikeEducationMikeEducation" +
+                "MikeEducation==========================="
 }
 
 class JwtAuthenticationFilter(authenticationManager: AuthenticationManager) : UsernamePasswordAuthenticationFilter() {
