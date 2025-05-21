@@ -140,7 +140,7 @@ class LoadInitData (
     @Test
     fun testStudentFindAll(){
         val studentList: List<Student> = studentRepository.findAll()
-        Assertions.assertTrue(studentList.size == 3)
+        Assertions.assertTrue(studentList.size == 4)
     }
 
     @Test
