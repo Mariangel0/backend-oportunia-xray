@@ -2,14 +2,21 @@ package edu.backend.oportuniabackend
 
 import edu.backend.oportuniabackend.ai.OpenAIService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.transaction.annotation.Transactional
 import java.util.NoSuchElementException
 import java.util.Optional
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
+import kotlin.text.get
 
 interface UserService {
     fun findAll(): List<UserResult>?
@@ -26,13 +33,13 @@ interface UserService {
 }
 
 @Service
-class AbstractUserService(
+class AbstractUserService (
     @Autowired
     private val userRepository: UserRepository,
 
     @Autowired
     private val userMapper: UserMapper,
-) : UserService {
+): UserService {
 
     override fun findAll(): List<UserResult>? {
         return userMapper.userListToUserListResult(userRepository.findAll())
@@ -1191,4 +1198,43 @@ class AbstractAdviceService(
             throw NoSuchElementException(String.format("Advice with the id: %s not found!", id))
         }
     }
+}
+
+@Service
+@Transactional
+class AppUserDetailsService(
+    @Autowired
+    val userRepository: UserRepository,
+    @Autowired
+    val roleRepository: RoleRepository,
+) : UserDetailsService {
+
+    @Throws(UsernameNotFoundException::class)
+    override fun loadUserByUsername(username: String): UserDetails {
+        val userAuth: org.springframework.security.core.userdetails.User
+        val user: User = userRepository.findByEmail(username).orElse(null)
+            ?: return org.springframework.security.core.userdetails.User(
+                "", "", true, true, true, true,
+                getAuthorities(
+                    listOf(
+                        roleRepository.findByName("USER").get()
+                    )
+                )
+            )
+
+        userAuth = org.springframework.security.core.userdetails.User(
+            user.email, user.password, user.enabled == true, true, true, // error
+            true, getAuthorities(user.roles!!.toMutableList())
+        )
+
+        return userAuth
+    }
+
+    private fun getAuthorities(roles: Collection<Role>): Collection<GrantedAuthority> {
+        return roles.flatMap { role ->
+            sequenceOf(SimpleGrantedAuthority(role.name)) +
+                    role.privilegeList.map { privilege -> SimpleGrantedAuthority(privilege.name) }
+        }.toList()
+    }
+
 }
