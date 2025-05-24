@@ -1,6 +1,7 @@
 package edu.backend.oportuniabackend
 
 import edu.backend.oportuniabackend.ai.OpenAIService
+import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -563,44 +564,41 @@ class AbstractCurriculumService(
     override fun uploadCurriculum(file: MultipartFile, studentId: Long): String {
         val student = studentRepository.findById(studentId).orElseThrow()
 
-        // Crear ruta de guardado segura
         val uploadsDir = Paths.get(System.getProperty("user.dir"), "uploads", "curriculums")
         Files.createDirectories(uploadsDir)
 
-        // Sanitizar nombre de archivo
         val safeFileName = file.originalFilename!!
             .replace("[^a-zA-Z0-9\\.\\-]".toRegex(), "_")
-
-        // Guardar archivo en disco
         val filePath = uploadsDir.resolve(safeFileName)
-        file.transferTo(filePath.toFile()) // ⚠️ esto debe ir ANTES de extraer texto
 
-        // Abrir archivo guardado y extraer texto desde disco, no desde MultipartFile
+        file.transferTo(filePath.toFile())
+
         val doc = PDDocument.load(filePath.toFile())
         val stripper = PDFTextStripper()
         val extractedText = stripper.getText(doc)
         doc.close()
 
-        // Enviar a OpenAI
         val prompt = """
         Este es un currículum de un estudiante. Revísalo y proporciona recomendaciones para mejorar:
-        
         $extractedText
     """.trimIndent()
 
-       // val feedback = openAIService.chat(prompt).block() ?: "No se pudo obtener feedback."
+        val feedback = runBlocking { openAIService.chat(prompt) }
 
-        // Guardar en base de datos
-//        val curriculum = Curriculum(
-//            student = student,
-//            archiveUrl = filePath.toString(),
-//        //    feedback = feedback
-//        )
-        //curriculumRepository.save(curriculum)
+        val curriculum = Curriculum(
+            student = student,
+            archiveUrl = filePath.toString(),
+            feedback = feedback
+        )
+        curriculumRepository.save(curriculum)
 
-        return "Currículum subido y feedback generado con éxito."
+        return """
+    ✅ Currículum analizado con éxito.
+    
+    🔍 Recomendaciones:
+    $feedback
+""".trimIndent()
     }
-
 
     override fun extractTextFromPDF(file: MultipartFile): String {
         val doc = PDDocument.load(file.inputStream)
