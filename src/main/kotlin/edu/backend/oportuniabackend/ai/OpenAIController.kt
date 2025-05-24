@@ -16,9 +16,8 @@ class OpenAIController(
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    suspend fun chat(@RequestBody request: PromptRequest): String {
-        println("🎯 [CONTROLLER] Prompt recibido: ${request.prompt}")
-        return runBlocking {  openAIService.chat(request.prompt) }
+    fun chat(@RequestBody request: PromptRequest): String {
+        return  runBlocking { openAIService.chat(request.prompt)  }
     }
 
 }

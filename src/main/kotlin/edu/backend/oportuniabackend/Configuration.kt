@@ -20,13 +20,6 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.server.ResponseStatusException
-import java.time.LocalDateTime
 @Profile("initlocal")
 @Configuration
 @EnableWebSecurity
@@ -115,7 +108,10 @@ class JwtSecurityConfiguration {
         val source = UrlBasedCorsConfigurationSource()
         val config = CorsConfiguration().apply {
             allowCredentials = true
-            addAllowedOrigin("http://localhost:3000")
+            allowedOrigins = listOf(
+                "http://localhost:3000",
+                "http://oportunia-dev.eba-rjnb6hpr.us-east-2.elasticbeanstalk.com/"
+            )
             addAllowedHeader("*")
             addAllowedMethod("*")
         }
@@ -141,46 +137,4 @@ class AppCustomDsl : AbstractHttpConfigurer<AppCustomDsl?, HttpSecurity?>() {
         }
     }
 
-}
-
-
-
-
-@RestControllerAdvice
-class GlobalExceptionHandler {
-
-    @ExceptionHandler(WebClientResponseException::class)
-    fun handleWebClientError(ex: WebClientResponseException): ResponseEntity<Map<String, Any>> {
-        println("📛 WebClient error: ${ex.statusCode} - ${ex.responseBodyAsString}")
-        val error = mapOf(
-            "timestamp" to LocalDateTime.now(),
-            "status" to ex.statusCode.value(),
-            "error" to ex.statusCode.toString().substringAfter(" "), // e.g. FORBIDDEN
-            "message" to ex.responseBodyAsString.ifBlank { "Error en la solicitud al servicio externo" }
-        )
-        return ResponseEntity.status(ex.statusCode).body(error)
-    }
-
-    @ExceptionHandler(ResponseStatusException::class)
-    fun handleResponseStatus(ex: ResponseStatusException): ResponseEntity<Map<String, Any>> {
-        val error = mapOf(
-            "timestamp" to LocalDateTime.now(),
-            "status" to ex.statusCode.value(),
-            "error" to ex.statusCode.toString().substringAfter(" "),
-            "message" to (ex.reason ?: "Error inesperado.")
-        )
-        return ResponseEntity.status(ex.statusCode).body(error)
-    }
-
-    @ExceptionHandler(Exception::class)
-    fun handleGeneralError(ex: Exception): ResponseEntity<Map<String, Any>> {
-        println("🔥 Error inesperado: ${ex.message}")
-        val error = mapOf(
-            "timestamp" to LocalDateTime.now(),
-            "status" to HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "error" to "INTERNAL_SERVER_ERROR",
-            "message" to (ex.message ?: "Ocurrió un error inesperado.")
-        )
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error)
-    }
 }
