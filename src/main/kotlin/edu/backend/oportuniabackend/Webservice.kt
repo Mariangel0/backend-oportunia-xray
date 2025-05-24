@@ -303,7 +303,7 @@ class ExperienceController(private val experienceService: ExperienceService) {
 }
 
 @RestController
-@RequestMapping("\${url.iaAnalyses}")
+@RequestMapping("\${url.ia_analyses}")
 class IAAnalysisController(private val iaAnalysisService: IAAnalysisService) {
 
     @GetMapping
@@ -409,7 +409,7 @@ class StreakController(private val streakService: StreakService) {
 }
 
 @RestController
-@RequestMapping("\${url.studentProgresses}")
+@RequestMapping("\${url.student_progresses}")
 class StudentProgressController(private val notificationService: StudentProgressService) {
 
     @GetMapping
