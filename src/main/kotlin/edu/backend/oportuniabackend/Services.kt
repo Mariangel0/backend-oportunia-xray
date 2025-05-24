@@ -17,6 +17,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import kotlin.text.get
 
 interface UserService {
@@ -40,6 +41,9 @@ class AbstractUserService (
 
     @Autowired
     private val userMapper: UserMapper,
+
+    @Autowired
+    private val passwordEncoder: BCryptPasswordEncoder,
 ): UserService {
 
     override fun findAll(): List<UserResult>? {
@@ -74,10 +78,15 @@ class AbstractUserService (
     }
 
     override fun createUser(user: UserInput): UserResult? {
+        val userEntity = userMapper.userInputToUser(user)
+
+        userEntity.password = passwordEncoder.encode(user.password)
+
         return userMapper.userToUserResult(
-            userRepository.save(userMapper.userInputToUser(user))
+            userRepository.save(userEntity)
         )
     }
+
 
     @Throws(NoSuchElementException::class)
     override fun updateUser(id: Long, userInput: UserInput): UserResult? {
