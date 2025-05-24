@@ -588,15 +588,15 @@ class AbstractCurriculumService(
         $extractedText
     """.trimIndent()
 
-        val feedback = openAIService.chat(prompt).block() ?: "No se pudo obtener feedback."
+       // val feedback = openAIService.chat(prompt).block() ?: "No se pudo obtener feedback."
 
         // Guardar en base de datos
-        val curriculum = Curriculum(
-            student = student,
-            archiveUrl = filePath.toString(),
-            feedback = feedback
-        )
-        curriculumRepository.save(curriculum)
+//        val curriculum = Curriculum(
+//            student = student,
+//            archiveUrl = filePath.toString(),
+//        //    feedback = feedback
+//        )
+        //curriculumRepository.save(curriculum)
 
         return "Currículum subido y feedback generado con éxito."
     }
@@ -1238,3 +1238,5 @@ class AppUserDetailsService(
     }
 
 }
+
+

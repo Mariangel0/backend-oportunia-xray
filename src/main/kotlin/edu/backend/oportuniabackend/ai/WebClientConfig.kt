@@ -7,7 +7,8 @@ import org.springframework.web.reactive.function.client.WebClient
 @Configuration
 class WebClientConfig {
     @Bean
-    fun webClient(): WebClient = WebClient.builder()
-        .baseUrl("https://api.openai.com/v1/chat/completions")
-        .build()
+    fun webClient(): WebClient =
+        WebClient.builder()
+            .baseUrl("https://api.openai.com/v1")
+            .build()
 }
