@@ -672,11 +672,11 @@ data class IAAnalysis(
     var date: Date,
 
     @OneToOne
-    @JoinColumn(name = "interview_id", unique = true, referencedColumnName = "id")
+    @JoinColumn(name = "interview_id", referencedColumnName = "id")
     var interview: Interview? = null,
 
     @OneToOne
-    @JoinColumn(name = "curriculum_id", unique = true, referencedColumnName = "id")
+    @JoinColumn(name = "curriculum_id", referencedColumnName = "id")
     var curriculum: Curriculum? = null,
 ) {
     override fun toString(): String {
