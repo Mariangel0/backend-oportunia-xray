@@ -1,24 +1,16 @@
 package edu.backend.oportuniabackend
 
 import edu.backend.oportuniabackend.ai.OpenAIService
-import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.transaction.annotation.Transactional
-import java.util.NoSuchElementException
-import java.util.Optional
-import java.nio.file.Files
-import java.nio.file.Paths
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.text.PDFTextStripper
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import kotlin.text.get
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.Optional
 
 interface UserService {
     fun findAll(): List<UserResult>?

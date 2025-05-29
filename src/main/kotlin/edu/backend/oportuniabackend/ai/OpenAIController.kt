@@ -11,22 +11,30 @@ import org.springframework.web.multipart.MultipartFile
 class OpenAIController(
     private val openAIService: OpenAIService
 ) {
-    data class PromptRequest(val prompt: String)
 
     @PostMapping(
-        "/ask",
+        "/{studentId}/interview",
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun chat(@RequestBody request: PromptRequest): String {
-        return  runBlocking { openAIService.chat(request.prompt)  }
+    fun chat(@RequestBody request: UserTextPrompt): ChatResponse = runBlocking {
+        openAIService.chat(request)
     }
 
-    @PostMapping("/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(
+        "/{studentId}/interview/continue",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun continueChat(@RequestBody input: UserMessage): ChatResponse = runBlocking {
+        openAIService.continueInterview(input)
+    }
+
+    @PostMapping("/{studentId}/curriculum", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadCurriculum(
         @RequestParam("file") file: MultipartFile,
-        @RequestParam("studentId") studentId: Long
-    ): ResponseEntity<String> {
+        @PathVariable("studentId") studentId: Long
+    ): ResponseEntity<AnalyzedCVResponse> {
         val result = runBlocking { openAIService.uploadCurriculum(file, studentId) }
         return ResponseEntity.ok(result)
     }

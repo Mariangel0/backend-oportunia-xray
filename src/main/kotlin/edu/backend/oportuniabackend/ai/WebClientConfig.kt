@@ -12,3 +12,4 @@ class WebClientConfig {
             .baseUrl("https://api.openai.com/v1")
             .build()
 }
+
