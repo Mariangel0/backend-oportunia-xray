@@ -12,30 +12,20 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
-//import software.amazon.awssdk.services.s3.model.S3Object
 import software.amazon.awssdk.services.textract.TextractClient
-import software.amazon.awssdk.services.textract.model.AnalyzeDocumentRequest
 import software.amazon.awssdk.services.textract.model.Block
+import software.amazon.awssdk.services.textract.model.BlockType
 import software.amazon.awssdk.services.textract.model.DetectDocumentTextRequest
 import software.amazon.awssdk.services.textract.model.Document
-import software.amazon.awssdk.services.textract.model.BlockType
-import software.amazon.awssdk.services.textract.model.FeatureType
-import software.amazon.awssdk.services.textract.model.GetDocumentAnalysisRequest
-import software.amazon.awssdk.services.textract.model.JobStatus
 import software.amazon.awssdk.services.textract.model.S3Object
-import software.amazon.awssdk.services.textract.model.StartDocumentAnalysisRequest
-
 
 @Service
 class S3Service(
     private val s3Client: S3Client,
-
     @Value("\${aws.s3.bucket}")
     private val bucketName: String
 ) {
-
     fun uploadFile(key: String, file: MultipartFile): String {
         val putRequest = PutObjectRequest.builder()
             .bucket(bucketName)
@@ -51,42 +41,23 @@ class S3Service(
 @Service
 class TextractClientService(private val textractClient: TextractClient) {
 
-    fun analyzeMultiPageDocument(bucket: String, key: String): List<Block> {
-        val startRequest = StartDocumentAnalysisRequest.builder()
-            .documentLocation { it.s3Object { s3 -> s3.bucket(bucket).name(key).build() } }
-            .featureTypes(FeatureType.FORMS, FeatureType.TABLES)
+    fun analyzeDocumentBasic(bucket: String, key: String): List<Block> {
+        val request = DetectDocumentTextRequest.builder()
+            .document(
+                Document.builder()
+                    .s3Object(
+                        S3Object.builder()
+                            .bucket(bucket)
+                            .name(key)
+                            .build()
+                    )
+                    .build()
+            )
             .build()
 
-        val startResponse = textractClient.startDocumentAnalysis(startRequest)
-        val jobId = startResponse.jobId()
+        val response = textractClient.detectDocumentText(request)
 
-        val blocks = mutableListOf<Block>()
-        var jobStatus: JobStatus
-        var nextToken: String? = null
-
-        do {
-            Thread.sleep(5000) // Esperar 5 segundos antes de cada consulta
-
-            val getRequestBuilder = GetDocumentAnalysisRequest.builder()
-                .jobId(jobId)
-                .maxResults(1000)
-
-            if (nextToken != null) {
-                getRequestBuilder.nextToken(nextToken)
-            }
-
-            val getResponse = textractClient.getDocumentAnalysis(getRequestBuilder.build())
-            jobStatus = getResponse.jobStatus()
-            blocks.addAll(getResponse.blocks())
-
-            nextToken = getResponse.nextToken()
-        } while (jobStatus == JobStatus.IN_PROGRESS || nextToken != null)
-
-        if (jobStatus != JobStatus.SUCCEEDED) {
-            throw RuntimeException("Textract analysis failed with status $jobStatus")
-        }
-
-        return blocks
+        return response.blocks()
     }
 }
 
@@ -97,18 +68,14 @@ class TextractProcessingService(
     private val experienceService: ExperienceService,
     private val abilityService: AbilityService
 ) {
-
     fun processCv(bucket: String, key: String, studentId: Long): Map<String, String> {
-        val blocks = textractClientService.analyzeMultiPageDocument(bucket, key)
+        val blocks = textractClientService.analyzeDocumentBasic(bucket, key)
 
         val lines = extractLines(blocks)
-
         val sections = extractSections(lines)
 
         val experienceText = sections["EXPERIENCIA LABORAL"] ?: ""
-
         val educationText = sections["EDUCACIÓN"] ?: ""
-
         val abilitiesText = sections["HABILIDADES"] ?: ""
 
         saveExperiencesToDB(experienceText, studentId)
@@ -149,8 +116,6 @@ class TextractProcessingService(
 
     private fun saveEducationToDB(educationText: String, studentId: Long) {
         val educationDetails = parseEducationDetails(educationText)
-
-
         educationDetails.forEach {
             val educationInput = EducationInput(
                 student = StudentInput(id = studentId),
@@ -161,6 +126,7 @@ class TextractProcessingService(
             educationService.create(educationInput)
         }
     }
+
     private fun saveExperiencesToDB(experienceText: String, studentId: Long) {
         val experienceDetails = parseExperienceDetails(experienceText)
         experienceDetails.forEach {
@@ -174,10 +140,8 @@ class TextractProcessingService(
         }
     }
 
-
     private fun saveAbilitiesToDB(abilitiesText: String, studentId: Long) {
         val abilitiesDetails = parseAbilities(abilitiesText)
-
         abilitiesDetails.forEach {
             val abilityInput = AbilityInput(
                 student = StudentInput(id = studentId),
@@ -187,8 +151,6 @@ class TextractProcessingService(
         }
     }
 
-
-
     private fun parseExperienceDetails(experienceText: String): List<ExperienceDetail> {
         val result = mutableListOf<ExperienceDetail>()
         val lines = experienceText.lines()
@@ -196,7 +158,6 @@ class TextractProcessingService(
 
         for (line in lines) {
             val matchResult = regex.find(line)
-
             if (matchResult != null) {
                 val role = matchResult.groupValues[1].trim()
                 val company = matchResult.groupValues[2].trim()
@@ -209,18 +170,15 @@ class TextractProcessingService(
         return result
     }
 
-
     private fun parseEducationDetails(educationText: String): List<EducationDetail> {
         val result = mutableListOf<EducationDetail>()
         val lines = educationText.lines()
-
         for (line in lines) {
             val yearRegex = Regex("""\b(19|20)\d{2}\b""")
             val yearMatch = yearRegex.find(line)
             val year = yearMatch?.value?.toIntOrNull() ?: 0
 
             val withoutYear = line.replace(yearRegex, "").trim()
-
             val parts = withoutYear.split('-')
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
@@ -230,9 +188,9 @@ class TextractProcessingService(
 
             result.add(EducationDetail(institution = institution, name = name, year = year))
         }
-
         return result
     }
+
     private fun parseAbilities(abilitiesText: String): List<AbilityDetail> {
         val result = mutableListOf<AbilityDetail>()
         val lines = abilitiesText.lines()
