@@ -309,9 +309,6 @@ data class Company(
     @OneToMany(mappedBy = "company")
     var companyReviewList: List<CompanyReview> = emptyList(),
 
-    @OneToMany(mappedBy = "company")
-    var experienceList: List<Experience> = emptyList()
-
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -573,15 +570,14 @@ data class Experience(
     var id: Long? = null,
 
     var role: String,
-    var year: Int,
+    var company: String,
+    var timeline: String,
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
     var student: Student? = null,
 
-    @ManyToOne
-    @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "id")
-    var company: Company? = null,
+
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -590,17 +586,17 @@ data class Experience(
         other as Experience
 
         if (id != other.id) return false
-        if (year != other.year) return false
         if (role != other.role) return false
-        if (student != other.student) return false
         if (company != other.company) return false
+        if (timeline != other.timeline) return false
+        if (student != other.student) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
-        result = 31 * result + year
+        result = 31 * result + timeline.hashCode()
         result = 31 * result + role.hashCode()
         result = 31 * result + student.hashCode()
         result = 31 * result + company.hashCode()
@@ -608,7 +604,7 @@ data class Experience(
     }
 
     override fun toString(): String {
-        return "Experience(id=$id, role='$role', year=$year, student=$student, company=$company)"
+        return "Experience(id=$id, role='$role', timeline=$timeline, student=$student, company=$company)"
     }
 }
 

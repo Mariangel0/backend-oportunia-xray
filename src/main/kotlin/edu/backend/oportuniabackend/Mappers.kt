@@ -35,7 +35,7 @@ interface StudentMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface ExperienceMapper {
     fun experienceToExperienceResult(experience: Experience): ExperienceResult
-    @Mapping(target = "company", ignore = true)
+
     @Mapping(target = "student", ignore = true)
     fun experienceInputToExperience(experienceInput: ExperienceInput): Experience
 
@@ -43,7 +43,7 @@ interface ExperienceMapper {
     fun experienceInputToExperience(dto: ExperienceInput, @MappingTarget experience: Experience)
 
     fun experienceListToExperienceResultList(experiences: List<Experience>): List<ExperienceResult>
-    @Mapping(target = "student", ignore = true)
+
     @Mapping(target = "company", ignore = true)
     fun updateExperienceFromInput(experienceInput: ExperienceInput, @MappingTarget experience: Experience)
 }
@@ -124,7 +124,6 @@ interface CompanyMapper {
     fun companyToCompanyResultLarge(company: Company): CompanyResultLarge
 
     @Mapping(target = "companyReviewList", expression = "java(java.util.Collections.emptyList())")
-    @Mapping(target = "experienceList", expression = "java(java.util.Collections.emptyList())")
     fun companyInputToCompany(companyInput: CompanyInput): Company
 
     fun companyListToCompanyListResult(companyList: List<Company>): List<CompanyResult>
@@ -132,7 +131,6 @@ interface CompanyMapper {
     fun companyListToCompanyListResultLarge(companyList: List<Company>): List<CompanyResultLarge>
 
     @Mapping(target = "companyReviewList", ignore = true)
-    @Mapping(target = "experienceList", ignore = true)
     fun updateCompanyFromInput(companyInput: CompanyInput, @MappingTarget company: Company)
 }
 

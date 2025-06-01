@@ -673,7 +673,6 @@ class AbstractExperienceService(
     @Autowired
     private val experienceMapper: ExperienceMapper,
     private val studentRepository: StudentRepository,
-    private val companyRepository: CompanyRepository
 ) : ExperienceService {
     override fun findAll(): List<ExperienceResult>? {
         return experienceMapper.experienceListToExperienceResultList(
@@ -705,10 +704,6 @@ class AbstractExperienceService(
 
     override fun create(experienceInput: ExperienceInput): ExperienceResult? {
         val entity = experienceMapper.experienceInputToExperience(experienceInput)
-        experienceInput.company?.id?.let {
-            entity.company = companyRepository.findById(it)
-                .orElseThrow { NoSuchElementException("Company with id $it not found") }
-        }
         experienceInput.student?.id?.let {
             entity.student = studentRepository.findById(it)
                 .orElseThrow { NoSuchElementException("Student with id $it not found") }

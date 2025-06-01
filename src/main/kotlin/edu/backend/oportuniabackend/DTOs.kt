@@ -235,19 +235,19 @@ data class ExperienceInput(
     var id: Long? = null,
     var title: String? = null,
     var description: String? = null,
-    var year: Int? = null,
+    var timeline: String? = null,
     var role: String? = null,
     var student: StudentInput? = null,
-    var company: CompanyInput? = null,
+    var company: String? = null,
 )
 
 data class ExperienceResult(
     var id: Long? = null,
     var title: String? = null,
     var description: String? = null,
-    var year: Int? = null,
+    var timeline: String? = null,
     var role: String? = null,
-    var company: CompanyResult,
+    var company: String? = null
 )
 
 // Notification
