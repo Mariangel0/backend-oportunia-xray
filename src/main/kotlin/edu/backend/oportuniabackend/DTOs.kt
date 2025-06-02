@@ -177,13 +177,13 @@ data class CurriculumInput(
     var id: Long?=null,
     var student: StudentInput?=null,
     var archiveUrl: String?=null,
-    var feedback: String?=null,
-)
+    var s3Key: String? = null,
+    )
 
 data class CurriculumResult(
     var id: Long,
     var archiveUrl: String? = null,
-    var feedback: String? = null,
+    var s3Key: String? = null,
 )
 
 data class CurriculumAnalysisInput(

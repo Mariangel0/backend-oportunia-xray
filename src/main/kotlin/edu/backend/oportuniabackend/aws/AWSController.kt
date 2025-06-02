@@ -13,37 +13,37 @@ import org.springframework.http.MediaType
 
 
 
-@RestController
-@RequestMapping("\${url.aws.curriculum}")
-class AwsCvController(
-    private val s3Service: S3Service,
-    private val textractProcessingService: TextractProcessingService,
-
-    @Value("\${aws.s3.bucket}")
-    private val bucketName: String
-) {
-
-    @PostMapping(
-        "/upload/{studentId}",
-        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
-    )
-    fun uploadCv(
-        @PathVariable studentId: Long,
-        @RequestParam("file") file: MultipartFile
-    ): ResponseEntity<Map<String, Any>> {
-
-        val extension = file.originalFilename?.substringAfterLast('.', "") ?: "pdf"
-        val key = "curriculums/$studentId/${UUID.randomUUID()}.$extension"
-
-        val s3Url = s3Service.uploadFile(key, file)
-        val sections = textractProcessingService.processCv(bucketName, key, studentId)
-
-        val response = mapOf(
-            "s3Url" to s3Url,
-            "sections" to sections
-        )
-
-        return ResponseEntity.ok(response)
-    }
-}
+//@RestController
+//@RequestMapping("\${url.aws.curriculum}")
+//class AwsCvController(
+//    private val s3Service: S3Service,
+//    private val textractProcessingService: TextractProcessingService,
+//
+//    @Value("\${aws.s3.bucket}")
+//    private val bucketName: String
+//) {
+//
+//    @PostMapping(
+//        "/upload/{studentId}",
+//        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+//        produces = [MediaType.APPLICATION_JSON_VALUE]
+//    )
+//    fun uploadCv(
+//        @PathVariable studentId: Long,
+//        @RequestParam("file") file: MultipartFile
+//    ): ResponseEntity<Map<String, Any>> {
+//
+//        val extension = file.originalFilename?.substringAfterLast('.', "") ?: "pdf"
+//        val key = "curriculums/$studentId/${UUID.randomUUID()}.$extension"
+//
+//        val s3Url = s3Service.uploadFile(key, file)
+//        val sections = textractProcessingService.processCv(bucketName, key, studentId)
+//
+//        val response = mapOf(
+//            "s3Url" to s3Url,
+//            "sections" to sections
+//        )
+//
+//        return ResponseEntity.ok(response)
+//    }
+//}

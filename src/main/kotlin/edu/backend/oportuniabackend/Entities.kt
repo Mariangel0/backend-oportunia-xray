@@ -3,6 +3,7 @@ package edu.backend.oportuniabackend
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.util.*
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
@@ -483,8 +484,9 @@ data class Curriculum(
     @Column(name = "archive_url")
     var archiveUrl: String,
 
-    @Column(columnDefinition = "TEXT")
-    var feedback: String,
+
+    @Column(name = "s3_key")
+    var s3Key: String? = null,
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
@@ -499,7 +501,7 @@ data class Curriculum(
 
         if (id != other.id) return false
         if (archiveUrl != other.archiveUrl) return false
-        if (feedback != other.feedback) return false
+        if (s3Key != other.s3Key) return false
         if (student != other.student) return false
 
         return true
@@ -508,13 +510,13 @@ data class Curriculum(
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
         result = 31 * result + archiveUrl.hashCode()
-        result = 31 * result + feedback.hashCode()
+        result = 31 * result + s3Key.hashCode()
         result = 31 * result + student.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "Curriculum(id=$id, archiveUrl='$archiveUrl', feedback='$feedback', student=$student)"
+        return "Curriculum(id=$id, archiveUrl='$archiveUrl', s3Key='$s3Key', student=$student)"
     }
 }
 

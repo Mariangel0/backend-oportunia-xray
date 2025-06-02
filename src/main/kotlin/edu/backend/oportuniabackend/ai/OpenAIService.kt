@@ -52,7 +52,6 @@ class OpenAIService(
         val curriculum = Curriculum(
             student = student,
             archiveUrl = filePath.toString(),
-            feedback = feedback
         )
         curriculumRepository.save(curriculum)
 
