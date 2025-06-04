@@ -43,6 +43,8 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+	implementation("software.amazon.awssdk:s3:2.20.19")
+	implementation("software.amazon.awssdk:textract:2.20.19")
 }
 
 tasks.withType<KotlinCompile> {

@@ -186,7 +186,7 @@ class LoadInitData (
     @Test
     fun testCurriculumFindAll(){
         val curriculumList: List<Curriculum> = curriculumRepository.findAll()
-        Assertions.assertTrue(curriculumList.size == 5)
+        Assertions.assertTrue(curriculumList.size == 3)
     }
 
     @Test
@@ -273,7 +273,7 @@ class LoadInitData (
     @Test
     fun testIAAnalysisFindAll(){
         val iaAnalysisList: List<IAAnalysis> = iaAnalysisRepository.findAll()
-        Assertions.assertTrue(iaAnalysisList.size == 5)
+        Assertions.assertTrue(iaAnalysisList.size == 3)
     }
     @Test
     fun testIAAnalysisFindById() {

@@ -114,8 +114,8 @@ class OpenAIService(
         val curriculum = Curriculum(
             student = student,
             archiveUrl = filePath.toString(),
-            feedback = jsonString
         )
+
         curriculumRepository.save(curriculum)
 
         return analyzedResponse

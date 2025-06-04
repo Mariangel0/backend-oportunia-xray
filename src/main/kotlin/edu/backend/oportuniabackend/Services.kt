@@ -1,7 +1,10 @@
 package edu.backend.oportuniabackend
 
 import edu.backend.oportuniabackend.ai.OpenAIService
+import edu.backend.oportuniabackend.aws.S3Service
+import edu.backend.oportuniabackend.aws.TextractProcessingService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -10,7 +13,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import java.util.Optional
+import java.util.UUID
 
 interface UserService {
     fun findAll(): List<UserResult>?
@@ -497,6 +502,7 @@ interface CurriculumService {
     fun create(curriculumInput: CurriculumInput): CurriculumResult?
     fun update(curriculumInput: CurriculumInput): CurriculumResult?
     fun deleteById(id: Long)
+    fun uploadAndProcess(file: MultipartFile, studentId: Long): CurriculumResult
 }
 
 @Service
@@ -504,7 +510,10 @@ class AbstractCurriculumService(
     @Autowired val curriculumRepository: CurriculumRepository,
     @Autowired private val curriculumMapper: CurriculumMapper,
     @Autowired private val studentRepository: StudentRepository,
-    @Autowired private val openAIService: OpenAIService
+    @Autowired private val openAIService: OpenAIService,
+    @Autowired private val s3Service: S3Service,
+    @Autowired private val textractProcessingService: TextractProcessingService,
+    @Value("\${aws.s3.bucket}") private val bucketName: String
 ) : CurriculumService {
 
     override fun findAll(): List<CurriculumResult>? {
@@ -559,6 +568,28 @@ class AbstractCurriculumService(
         }
         curriculumRepository.deleteById(id)
     }
+
+    override fun uploadAndProcess(file: MultipartFile, studentId: Long): CurriculumResult {
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with ID $studentId not found") }
+
+        val extension = file.originalFilename?.substringAfterLast('.', "") ?: "pdf"
+
+        val key = "curriculums/$studentId/${UUID.randomUUID()}.$extension"
+
+        val archiveUrl = s3Service.uploadFile(key, file)
+
+        val extractedSections = textractProcessingService.processCv(bucketName, key, studentId)
+
+        val curriculumInput = CurriculumInput(
+            student = StudentInput(id = studentId),
+            archiveUrl = archiveUrl,
+            s3Key = key
+        )
+
+        return create(curriculumInput)!!
+    }
+
 }
 
 
@@ -665,7 +696,6 @@ class AbstractExperienceService(
     @Autowired
     private val experienceMapper: ExperienceMapper,
     private val studentRepository: StudentRepository,
-    private val companyRepository: CompanyRepository
 ) : ExperienceService {
     override fun findAll(): List<ExperienceResult>? {
         return experienceMapper.experienceListToExperienceResultList(
@@ -697,10 +727,6 @@ class AbstractExperienceService(
 
     override fun create(experienceInput: ExperienceInput): ExperienceResult? {
         val entity = experienceMapper.experienceInputToExperience(experienceInput)
-        experienceInput.company?.id?.let {
-            entity.company = companyRepository.findById(it)
-                .orElseThrow { NoSuchElementException("Company with id $it not found") }
-        }
         experienceInput.student?.id?.let {
             entity.student = studentRepository.findById(it)
                 .orElseThrow { NoSuchElementException("Student with id $it not found") }

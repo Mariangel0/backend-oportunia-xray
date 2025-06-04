@@ -177,13 +177,13 @@ data class CurriculumInput(
     var id: Long?=null,
     var student: StudentInput?=null,
     var archiveUrl: String?=null,
-    var feedback: String?=null,
-)
+    var s3Key: String? = null,
+    )
 
 data class CurriculumResult(
     var id: Long,
     var archiveUrl: String? = null,
-    var feedback: String? = null,
+    var s3Key: String? = null,
 )
 
 data class CurriculumAnalysisInput(
@@ -235,19 +235,19 @@ data class ExperienceInput(
     var id: Long? = null,
     var title: String? = null,
     var description: String? = null,
-    var year: Int? = null,
+    var timeline: String? = null,
     var role: String? = null,
     var student: StudentInput? = null,
-    var company: CompanyInput? = null,
+    var company: String? = null,
 )
 
 data class ExperienceResult(
     var id: Long? = null,
     var title: String? = null,
     var description: String? = null,
-    var year: Int? = null,
+    var timeline: String? = null,
     var role: String? = null,
-    var company: CompanyResult,
+    var company: String? = null
 )
 
 // Notification

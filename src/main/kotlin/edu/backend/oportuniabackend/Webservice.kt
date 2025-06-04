@@ -226,6 +226,18 @@ class CurriculumController(private val curriculumService: CurriculumService) {
         curriculumService.deleteById(id)
     }
 
+    @PostMapping(
+        "/upload/{studentId}",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun uploadCv(
+        @PathVariable studentId: Long,
+        @RequestParam("file") file: MultipartFile
+    ): ResponseEntity<CurriculumResult> {
+        return ResponseEntity.ok(curriculumService.uploadAndProcess(file, studentId))
+    }
+
 }
 
 @RestController
