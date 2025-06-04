@@ -175,15 +175,16 @@ data class IAAnalysisDetails(
 
 data class CurriculumInput(
     var id: Long?=null,
-    var student: StudentInput?=null,
     var archiveUrl: String?=null,
     var s3Key: String? = null,
+    var student: StudentInput?=null
     )
 
 data class CurriculumResult(
-    var id: Long,
+    var id: Long? = null,
     var archiveUrl: String? = null,
     var s3Key: String? = null,
+    var student: StudentResult? = null
 )
 
 data class CurriculumAnalysisInput(
@@ -224,6 +225,7 @@ data class EducationInput(
 
 data class EducationResult(
     var id: Long? = null,
+    var student: StudentResult? = null,
     var name: String? = null,
     var institution: String? = null,
     var year: Int? = null,
@@ -233,8 +235,6 @@ data class EducationResult(
 
 data class ExperienceInput(
     var id: Long? = null,
-    var title: String? = null,
-    var description: String? = null,
     var timeline: String? = null,
     var role: String? = null,
     var student: StudentInput? = null,
@@ -243,10 +243,9 @@ data class ExperienceInput(
 
 data class ExperienceResult(
     var id: Long? = null,
-    var title: String? = null,
-    var description: String? = null,
     var timeline: String? = null,
     var role: String? = null,
+    var student: StudentResult? = null,
     var company: String? = null
 )
 
