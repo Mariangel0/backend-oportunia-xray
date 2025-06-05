@@ -183,16 +183,26 @@ interface InterviewMapper {
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CurriculumMapper {
+
+    @Mapping(target = "student", source = "student") // Asegúrate de que `student` sea mapeado correctamente
     fun curriculumToCurriculumResult(curriculum: Curriculum): CurriculumResult
 
-    @Mapping(target = "student", ignore = true)
+    // Mapeo de CurriculumInput a Curriculum (cuando se recibe el CurriculumInput)
+    @Mapping(target = "student", ignore = true) // Ignorar el mapeo de 'student' si no lo necesitas
     fun curriculumInputToCurriculum(curriculumInput: CurriculumInput): Curriculum
 
-    @Mapping(target = "student", ignore = true)
+    // Mapeo para actualizar el Curriculum existente con los valores de CurriculumInput
+    @Mapping(target = "student", ignore = true) // Ignorar el mapeo de 'student'
     fun curriculumInputToCurriculum(curriculumInput: CurriculumInput, @MappingTarget curriculum: Curriculum)
 
+    // Método para convertir una lista de Curriculum a una lista de CurriculumResult
     fun curriculumListToCurriculumResultList(curriculums: List<Curriculum>): List<CurriculumResult>
+
+    // Método para actualizar un Curriculum con un CurriculumInput
+    @Mapping(target = "student", ignore = true) // Ignorar el mapeo de 'student'
+    fun updateCurriculumFromInput(curriculumInput: CurriculumInput, @MappingTarget curriculum: Curriculum)
 }
+
 
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
