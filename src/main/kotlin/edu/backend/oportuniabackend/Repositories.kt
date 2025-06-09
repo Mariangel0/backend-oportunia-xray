@@ -37,7 +37,7 @@ interface CompanyRepository : JpaRepository<Company, Long>
 
 @Repository
 interface CompanyReviewRepository : JpaRepository<CompanyReview, Long>{
-    fun findByCompanyId(@Param("companyId") companyId: Long): List<CompanyReview>
+    fun findByCompany(@Param("company") company: Long): List<CompanyReview>
 }
 
 @Repository

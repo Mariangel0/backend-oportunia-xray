@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -29,6 +30,8 @@ interface UserService {
     fun updateUser(id: Long, user: UserInput): UserResult?
 
     fun deleteUser(id: Long)
+
+    fun getCurrentUser(): UserResult?
 }
 
 @Service
@@ -110,6 +113,18 @@ class AbstractUserService (
         }
     }
 
+    override fun getCurrentUser(): UserResult? {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (auth == null || !auth.isAuthenticated) {
+            return null
+        }
+        val email = auth.principal as String
+        val userEntityOptional = userRepository.findByEmail(email)
+        if (userEntityOptional.isEmpty) {
+            return null
+        }
+        return userMapper.userToUserResult(userEntityOptional.get())
+    }
 }
 
 interface StudentService {
@@ -257,7 +272,7 @@ class AbstractAdminService(
 interface CompanyService {
     fun findAll(): List<CompanyResult>?
     fun findAllInfo(): List<CompanyResultLarge>?
-    fun findById(id: Long): CompanyResult?
+    fun findById(id: Long): CompanyResultLarge?
     fun createCompany(companyInput: CompanyInput): CompanyResult?
     fun updateCompany(id: Long, companyInput: CompanyInput): CompanyResult?
     fun deleteCompany(id: Long)
@@ -286,14 +301,14 @@ class AbstractCompanyService(
     }
 
     @Throws(NoSuchElementException::class)
-    override fun findById(id: Long): CompanyResult? {
+    override fun findById(id: Long): CompanyResultLarge? {
         val company: Optional<Company> = companyRepository.findById(id)
         if (company.isEmpty) {
             throw NoSuchElementException(
                 String.format(
                     "The company with the id: %s not found!", id))
         }
-        return companyMapper.companyToCompanyResult(company.get())
+        return companyMapper.companyToCompanyResultLarge(company.get())
 
     }
 
@@ -331,6 +346,7 @@ class AbstractCompanyService(
 
 interface CompanyReviewService {
     fun findAll(): List<CompanyReviewResult>?
+    fun findByCompanyId(companyId: Long): List<CompanyReviewInput>?
     fun findById(id: Long): CompanyReviewResult?
     fun createCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReviewResult?
     fun updateCompanyReview(id: Long, companyReviewInput: CompanyReviewInput): CompanyReviewResult?
@@ -356,6 +372,12 @@ class AbstractCompanyReviewService(
         )
     }
 
+    override fun findByCompanyId(companyId: Long): List<CompanyReviewInput>? {
+        return companyReviewMapper.companyReviewListToCompanyReviewInputList(
+            (companyReviewRepository.findByCompany(companyId))
+        )
+    }
+
     @Throws(NoSuchElementException::class)
     override fun findById(id: Long): CompanyReviewResult? {
         val companyReview: Optional<CompanyReview> = companyReviewRepository.findById(id)
@@ -368,10 +390,6 @@ class AbstractCompanyReviewService(
 
     override fun createCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReviewResult? {
         val entity = companyReviewMapper.companyReviewInputToCompanyReview(companyReviewInput)
-        companyReviewInput.company?.id?.let {
-            entity.company = companyRepository.findById(it)
-                .orElseThrow { NoSuchElementException("Company with id $it not found") }
-        }
         companyReviewInput.student?.id?.let {
             entity.student = studentRepository.findById(it)
                 .orElseThrow { NoSuchElementException("Student with id $it not found") }
