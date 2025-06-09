@@ -75,7 +75,7 @@ object AIResponseConfiguration {
         return """
             Olvida cualquier conversación previa. 
             Eres un experto en reclutamiento y análisis de currículums.
-            Por favor responde únicamente en JSON con la siguiente estructura:
+            Solo puedes responder en JSON con la siguiente estructura sin ningun caracter que no sea para JSON:
 
             {
               "recomendaciones": [ "recomendación 1", "recomendación 2", "..."],

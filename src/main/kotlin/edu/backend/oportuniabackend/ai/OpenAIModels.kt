@@ -56,5 +56,3 @@ data class MultipleChoiceGenerationRequest(
     val topic: String,
     val difficulty: String = "medium"
 )
-
-
