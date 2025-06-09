@@ -17,7 +17,10 @@ class OpenAIController(
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun chat(@RequestBody request: UserTextPrompt): ChatResponse = runBlocking {
+    fun chat(
+        @PathVariable studentId: Long,
+        @RequestBody request: UserTextPrompt
+    ): ChatResponse = runBlocking {
         openAIService.chat(request)
     }
 
@@ -26,18 +29,37 @@ class OpenAIController(
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun continueChat(@RequestBody input: UserMessage): ChatResponse = runBlocking {
+    fun continueChat(
+        @PathVariable studentId: Long,
+        @RequestBody input: UserMessage
+    ): ChatResponse = runBlocking {
         openAIService.continueInterview(input)
     }
 
     @PostMapping("/{studentId}/curriculum", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadCurriculum(
         @RequestParam("file") file: MultipartFile,
-        @PathVariable("studentId") studentId: Long
+        @PathVariable studentId: Long
     ): ResponseEntity<AnalyzedCVResponse> {
         val result = runBlocking { openAIService.uploadCurriculum(file, studentId) }
         return ResponseEntity.ok(result)
     }
 
+    @PostMapping("/{studentId}/quiz/generate", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun generateMCQuizForUser(
+        @PathVariable studentId: Long,
+        @RequestBody request: MultipleChoiceGenerationRequest
+    ): ResponseEntity<MultipleChoiceQuestion> = runBlocking {
+        val result = openAIService.generateMultipleChoiceQuiz(studentId, request.topic, request.difficulty)
+        ResponseEntity.ok(result)
+    }
 
+    @PostMapping("/{studentId}/quiz/evaluate", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun evaluateMCQuizForUser(
+        @PathVariable studentId: Long,
+        @RequestBody request: MultipleChoiceAnswer
+    ): ResponseEntity<MultipleChoiceEvaluation> = runBlocking {
+        val result = openAIService.evaluateMultipleChoiceQuiz(studentId, request.selectedOption)
+        ResponseEntity.ok(result)
+    }
 }

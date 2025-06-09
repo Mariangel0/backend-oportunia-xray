@@ -869,3 +869,52 @@ data class StudentProgress(
         return "StudentProgress(id=$id, totalInterviews=$totalInterviews, averageScore=$averageScore, uploadedCl=$uploadedCl, lastActivity=$lastActivity, student=$student)"
     }
 }
+
+@Entity
+@Table(name = "quizzes")
+data class Quiz(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+
+    @OneToOne
+    @JoinColumn(name = "student_id")
+    var student: Student? = null,
+
+    var question: String,
+
+    @ElementCollection
+    var options: List<String>,
+    var correctAnswerIndex: Int,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "last_activity")
+    var date: Date,
+
+
+    ) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Quiz
+
+        if (id != other.id) return false
+        if (correctAnswerIndex != other.correctAnswerIndex) return false
+        if (student != other.student) return false
+        if (question != other.question) return false
+        if (options != other.options) return false
+        if (date != other.date) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + correctAnswerIndex
+        result = 31 * result + (student?.hashCode() ?: 0)
+        result = 31 * result + question.hashCode()
+        result = 31 * result + options.hashCode()
+        result = 31 * result + date.hashCode()
+        return result
+    }
+}
