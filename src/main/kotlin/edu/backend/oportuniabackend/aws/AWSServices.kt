@@ -183,8 +183,8 @@ class TextractProcessingService(
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
 
-            val institution = parts.getOrNull(0) ?: "Unknown"
-            val name = parts.getOrNull(1) ?: "Unknown"
+            val name = parts.getOrNull(0) ?: "Unknown"
+            val institution = parts.getOrNull(1) ?: "Unknown"
 
             result.add(EducationDetail(institution = institution, name = name, year = year))
         }
