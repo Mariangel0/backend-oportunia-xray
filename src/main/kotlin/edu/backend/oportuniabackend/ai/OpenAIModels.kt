@@ -34,3 +34,27 @@ data class AnalyzedCVResponse(
     val recomendaciones: List<String>,
     val comentarios: String
 )
+
+data class MultipleChoiceQuestion(
+    val question: String,
+    val options: List<String>,
+    val correctAnswer: String
+)
+
+data class MultipleChoiceAnswer(
+    val selectedOption: String
+)
+
+data class MultipleChoiceEvaluation(
+    val question: String,
+    val selectedOption: String,
+    val correctAnswer: String,
+    val isCorrect: Boolean
+)
+
+data class MultipleChoiceGenerationRequest(
+    val topic: String,
+    val difficulty: String = "medium"
+)
+
+

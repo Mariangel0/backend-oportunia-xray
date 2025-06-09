@@ -14,10 +14,11 @@ import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
 import java.nio.file.Paths
 
-
 interface AIService {
     suspend fun chat(prompt: UserTextPrompt): ChatResponse
     suspend fun uploadCurriculum(file: MultipartFile, studentId: Long): AnalyzedCVResponse
+    suspend fun generateMultipleChoiceQuiz(studentId: Long, topic: String, difficulty: String): MultipleChoiceQuestion
+    suspend fun evaluateMultipleChoiceQuiz(studentId: Long, selectedOption: String): MultipleChoiceEvaluation
 }
 
 @Service
@@ -28,9 +29,11 @@ class OpenAIService(
 ) : AIService {
 
     private val conversationHistories = mutableMapOf<String, MutableList<Message>>()
-
+    private val quizHistories = mutableMapOf<Long, MultipleChoiceQuestion>()
 
     override suspend fun chat(prompt: UserTextPrompt): ChatResponse {
+        conversationHistories.remove(prompt.id.toString())
+
         val userHistory = conversationHistories.getOrPut(prompt.id.toString()) {
             mutableListOf(
                 Message(
@@ -44,9 +47,7 @@ class OpenAIService(
         }
 
         userHistory.add(Message(role = "user", content = prompt.message))
-
         val request = ChatRequest(messages = userHistory)
-
         val response = client.sendPrompt(request)
 
         response.choices?.firstOrNull()?.message?.let {
@@ -61,9 +62,7 @@ class OpenAIService(
             ?: throw IllegalStateException("No se ha iniciado una entrevista para este id: ${input.id}")
 
         userHistory.add(Message(role = "user", content = input.message))
-
         val request = ChatRequest(messages = userHistory)
-
         val response = client.sendPrompt(request)
 
         response.choices?.firstOrNull()?.message?.let {
@@ -81,44 +80,81 @@ class OpenAIService(
             Files.createDirectories(uploadsDir)
         }
 
-        val safeFileName = file.originalFilename!!
-            .replace("[^a-zA-Z0-9\\.\\-]".toRegex(), "_")
+        val safeFileName = file.originalFilename!!.replace("[^a-zA-Z0-9\\.\\-]".toRegex(), "_")
         val filePath = uploadsDir.resolve(safeFileName)
-
         file.transferTo(filePath.toFile())
 
         val doc = PDDocument.load(filePath.toFile())
-        val stripper = PDFTextStripper()
-        val extractedText = stripper.getText(doc)
+        val extractedText = PDFTextStripper().getText(doc)
         doc.close()
 
         val promptText = """
-        ${AIResponseConfiguration.getCurriculumFeedback()}
-        $extractedText
-    """.trimIndent()
+            ${AIResponseConfiguration.getCurriculumFeedback()}
+            $extractedText
+        """.trimIndent()
 
-        val messages = listOf(
-            Message(role = "user", content = promptText)
-        )
-
-        val chatRequest = ChatRequest(messages = messages)
-
-        val response = client.sendPrompt(chatRequest)
+        val messages = listOf(Message(role = "user", content = promptText))
+        val response = client.sendPrompt(ChatRequest(messages = messages))
 
         val jsonString = response.choices?.firstOrNull()?.message?.content
             ?: throw IllegalStateException("No se recibió respuesta del modelo")
 
-        val mapper = jacksonObjectMapper()
-        val analyzedResponse = mapper.readValue<AnalyzedCVResponse>(jsonString)
+        val analyzedResponse = jacksonObjectMapper().readValue<AnalyzedCVResponse>(jsonString)
 
-        val curriculum = Curriculum(
-            student = student,
-            archiveUrl = filePath.toString(),
-        )
-
+        val curriculum = Curriculum(student = student, archiveUrl = filePath.toString())
         curriculumRepository.save(curriculum)
 
         return analyzedResponse
     }
 
+    override suspend fun generateMultipleChoiceQuiz(studentId: Long, topic: String, difficulty: String): MultipleChoiceQuestion {
+        val promptText = """
+            Eres unicamente un generador de JSON. Crea una única pregunta de selección múltiple sobre el tema "$topic" con dificultad "$difficulty".
+
+            Devuelve ÚNICAMENTE un JSON con esta estructura:
+            {
+              "question": "...",
+              "options": ["...", "...", "...", "..."],
+              "correctAnswer": "..."
+            }
+        """.trimIndent()
+
+        val messages = listOf(Message(role = "user", content = promptText))
+        val response = client.sendPrompt(ChatRequest(messages = messages))
+
+        val jsonString = response.choices?.firstOrNull()?.message?.content
+            ?: throw IllegalStateException("No se recibió respuesta del modelo")
+
+        val question = jacksonObjectMapper().readValue<MultipleChoiceQuestion>(jsonString)
+        quizHistories[studentId] = question
+
+        return question
+    }
+
+    override suspend fun evaluateMultipleChoiceQuiz(studentId: Long, selectedOption: String): MultipleChoiceEvaluation {
+        val question = quizHistories[studentId]
+            ?: throw IllegalStateException("No hay pregunta previa para el usuario con ID: $studentId")
+
+        val prompt = """
+            Eres un evaluador automático. Devuelve ÚNICAMENTE el siguiente JSON, sin texto adicional:
+            {
+              "question": "...",
+              "selectedOption": "...",
+              "correctAnswer": "...",
+              "isCorrect": true
+            }
+
+            Pregunta: ${question.question}
+            Opciones: ${question.options}
+            Correcta: ${question.correctAnswer}
+            Seleccionada: $selectedOption
+        """.trimIndent()
+
+        val messages = listOf(Message(role = "user", content = prompt))
+        val response = client.sendPrompt(ChatRequest(messages = messages))
+        val jsonString = response.choices?.firstOrNull()?.message?.content
+            ?: throw IllegalStateException("No se recibió respuesta del modelo")
+
+        return jacksonObjectMapper().readValue(jsonString)
+    }
 }
