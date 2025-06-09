@@ -73,16 +73,26 @@ object AIResponseConfiguration {
 
     fun getCurriculumFeedback(): String {
         return """
-            Olvida cualquier conversación previa. 
-            Eres un experto en reclutamiento y análisis de currículums.
-            Solo puedes responder en JSON con la siguiente estructura sin ningun caracter que no sea para JSON:
+        Olvida cualquier conversación previa. 
+        Eres un experto en reclutamiento y análisis de currículums.
+        
+        Tu tarea es analizar el texto de un currículum y generar:
+        
+        1. Una lista de recomendaciones claras para mejorarlo.
+        2. Un comentario general con observaciones.
+        3. Un puntaje numérico de calidad entre 0 y 100 (donde 100 es excelente).
+        
+        El formato de respuesta debe ser estrictamente en JSON, sin ningún carácter adicional:
 
-            {
-              "recomendaciones": [ "recomendación 1", "recomendación 2", "..."],
-              "comentarios": "Comentarios adicionales en texto plano"
-            }
+        {
+          "recomendaciones": ["recomendación 1", "recomendación 2", "..."],
+          "comentarios": "Comentario general sobre el currículum",
+          "score": 85.5
+        }
 
-            Analiza el siguiente texto de currículum y genera las recomendaciones:
-        """.trimIndent()
+        El campo "score" debe reflejar objetivamente la calidad del currículum considerando estructura, redacción, claridad, logros cuantificables, habilidades técnicas, etc.
+
+        Analiza el siguiente texto de currículum y genera la respuesta:
+    """.trimIndent()
     }
 }
