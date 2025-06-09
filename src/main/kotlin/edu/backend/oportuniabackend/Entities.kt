@@ -422,11 +422,20 @@ data class Advice(
     }
 }
 
+@Id
+@SequenceGenerator(
+    name = "company_review_seq",
+    sequenceName = "company_review_seq",
+    allocationSize = 1
+)
+@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "company_review_seq")
+var id: Long? = null
+
 @Entity
 @Table(name = "companies_reviews")
 data class CompanyReview(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
     var rating: Float,

@@ -137,7 +137,7 @@ class LoadInitData (
 
     @Test
     fun testCompanyReviewFindByCompanyId() {
-        val companyReviewList: List<CompanyReview> = companyReviewRepository.findByCompanyId(1)
+        val companyReviewList: List<CompanyReview> = companyReviewRepository.findByCompany(1)
         Assertions.assertTrue(companyReviewList.size == 2)
     }
 

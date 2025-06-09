@@ -154,6 +154,10 @@ class CompanyReviewController(private val reviewService: CompanyReviewService) {
     @ResponseBody
     fun findAll() = reviewService.findAll()
 
+    @GetMapping("/otro")
+    @ResponseBody
+    fun findAllOtro() = reviewService.findAllOtro()
+
 
     @GetMapping("company/{companyId}")
     @ResponseBody

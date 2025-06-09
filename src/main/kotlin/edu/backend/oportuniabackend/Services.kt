@@ -345,7 +345,8 @@ class AbstractCompanyService(
 }
 
 interface CompanyReviewService {
-    fun findAll(): List<CompanyReviewResult>?
+    fun findAll(): List<CompanyReviewInput>?
+    fun findAllOtro(): List<CompanyReviewResult>?
     fun findByCompanyId(companyId: Long): List<CompanyReviewInput>?
     fun findById(id: Long): CompanyReviewResult?
     fun createCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReviewResult?
@@ -366,11 +367,19 @@ class AbstractCompanyReviewService(
 
 ) : CompanyReviewService {
 
-    override fun findAll(): List<CompanyReviewResult>? {
+    override fun findAll(): List<CompanyReviewInput>? {
+        return companyReviewMapper.companyReviewListToCompanyReviewInputList(
+            (companyReviewRepository.findAll())
+        )
+    }
+
+    override fun findAllOtro(): List<CompanyReviewResult>? {
         return companyReviewMapper.companyReviewListToCompanyReviewResultList(
             (companyReviewRepository.findAll())
         )
     }
+
+
 
     override fun findByCompanyId(companyId: Long): List<CompanyReviewInput>? {
         return companyReviewMapper.companyReviewListToCompanyReviewInputList(
@@ -394,6 +403,7 @@ class AbstractCompanyReviewService(
             entity.student = studentRepository.findById(it)
                 .orElseThrow { NoSuchElementException("Student with id $it not found") }
         }
+        entity.company = companyReviewInput.company
         return companyReviewMapper.companyReviewToCompanyReviewResult(
             companyReviewRepository.save(entity)
         )
