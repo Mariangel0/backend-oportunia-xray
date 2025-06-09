@@ -439,9 +439,8 @@ data class CompanyReview(
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")
     var student: Student? = null,
 
-    @ManyToOne
-    @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "id")
-    var company: Company? = null,
+    @Column(name = "company_id", nullable = false)
+    var company: Long ,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

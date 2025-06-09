@@ -49,6 +49,12 @@ data class UserResult(
     var roles: List<RoleDetails>,
 )
 
+data class UserReview(
+    var id: Long,
+    var firstName: String,
+    var lastName: String,
+)
+
 data class StudentInput(
     var id: Long?=null,
     var description: String?=null,
@@ -68,6 +74,11 @@ data class StudentResult(
     var githubUrl: String,
     var bornDate: String,
     var location: String
+)
+
+data class StudentReview(
+    var id: Long,
+    var user: UserReview?=null,
 )
 
 data class AdminInput(
@@ -141,8 +152,8 @@ data class CompanyReviewInput(
     var id: Long?=null,
     var comment: String?=null,
     var rating: Float?=null,
-    var company: CompanyInput?=null,
-    var student: StudentInput?=null,
+    var company: Long,
+    var student: StudentReview?=null,
     var createdAt: Date?=null,
 )
 

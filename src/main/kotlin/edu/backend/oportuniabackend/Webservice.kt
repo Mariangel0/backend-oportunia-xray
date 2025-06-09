@@ -1,7 +1,10 @@
 package edu.backend.oportuniabackend
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
@@ -32,6 +35,16 @@ class UserController(private val userService: UserService) {
     @ResponseBody
     fun deleteById(@PathVariable id: Long) {
         userService.deleteUser(id)
+    }
+
+    @GetMapping("/current")
+    fun getCurrentUser(): ResponseEntity<UserResult> {
+        val current: UserResult? = userService.getCurrentUser()
+        return if (current == null) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        } else {
+            ResponseEntity.ok(current)
+        }
     }
 }
 
@@ -140,6 +153,13 @@ class CompanyReviewController(private val reviewService: CompanyReviewService) {
     @GetMapping
     @ResponseBody
     fun findAll() = reviewService.findAll()
+
+
+    @GetMapping("company/{companyId}")
+    @ResponseBody
+    fun findByCompanyId(@PathVariable companyId: Long): List<CompanyReviewInput>? {
+       return reviewService.findByCompanyId(companyId)
+    }
 
 
     @GetMapping("{id}")

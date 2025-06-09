@@ -150,6 +150,7 @@ interface CompanyReviewMapper {
     fun updateCompanyReviewFromInput(companyReviewInput: CompanyReviewInput, @MappingTarget companyReview: CompanyReview)
 
     fun companyReviewListToCompanyReviewResultList(companyReviews: List<CompanyReview>): List<CompanyReviewResult>
+    fun companyReviewListToCompanyReviewInputList(companyReviews: List<CompanyReview>): List<CompanyReviewInput>
 }
 
 //CV AND INTERVIEWS
