@@ -13,10 +13,21 @@ data class PrivilegeDetails (
     var name: String? = null
 )
 
+data class PrivilegeDto(
+    var id: Long? = null,
+    var name: String? = null,
+)
+
+data class RoleDto(
+    var id: Long? = null,
+    var name: String? = null,
+    var privileges: List<PrivilegeDto> = emptyList()
+)
+
 data class RoleDetails (
     var id: Long? = null,
     var name: String? = null,
-    var privileges: List<PrivilegeDetails>? = null,
+    var privileges: List<PrivilegeDetails> = emptyList(),
 )
 
 // USERS
@@ -46,7 +57,7 @@ data class UserResult(
     var enabled: Boolean?,
     var tokenExpired: Boolean?,
     var createDate: Date,
-    var roles: List<RoleDetails>,
+    var roles: List<RoleDto>,
 )
 
 data class UserReview(

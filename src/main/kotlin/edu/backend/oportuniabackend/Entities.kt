@@ -5,11 +5,20 @@ import java.util.*
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
+
+
+
 @Entity
 @Table(name = "users")
 data class User(
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+        name = "user_seq",
+        sequenceName = "user_seq",
+        allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     var id: Long? = null,
 
     @Column(name = "first_name")
@@ -98,7 +107,7 @@ data class Role(
         joinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "privilege_id", referencedColumnName = "id")]
     )
-    var privilegeList: Set<Privilege>,
+    var privilegeList: Set<Privilege> = emptySet(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -131,12 +140,12 @@ data class Privilege(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id:Long? = null,
-    var name: String,
+    var name: String? = null,
     // Entity Relationship
     @ManyToMany(fetch = FetchType.LAZY)
-    var userList: Set<User>,
+    var userList: Set<User> = emptySet(),
     @ManyToMany(fetch = FetchType.LAZY)
-    var roleList: Set<Role>,
+    var roleList: Set<Role> = emptySet(),
 
     ) {
     override fun equals(other: Any?): Boolean {
@@ -422,20 +431,18 @@ data class Advice(
     }
 }
 
-@Id
-@SequenceGenerator(
-    name = "company_review_seq",
-    sequenceName = "company_review_seq",
-    allocationSize = 1
-)
-@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "company_review_seq")
-var id: Long? = null
+
 
 @Entity
 @Table(name = "companies_reviews")
 data class CompanyReview(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(
+        name = "company_review_seq",
+        sequenceName = "company_review_seq",
+        allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "company_review_seq")
     var id: Long? = null,
 
     var rating: Float,

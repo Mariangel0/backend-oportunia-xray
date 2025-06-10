@@ -9,12 +9,22 @@ interface UserMapper {
     fun userToUserResult(user: User): UserResult
     fun userInputToUser(userInput: UserInput): User
     fun roleSetToRoleDetailsSet(roles: Set<Role>): Set<RoleDetails>
+
+    @Mapping(source = "privilegeList", target = "privileges")
     fun roleToRoleDetails(role: Role): RoleDetails
     fun privilegeSetToPrivilegeDetailsSet(privileges: Set<Privilege>): Set<PrivilegeDetails>
     fun privilegeToPrivilegeDetails(privilege: Privilege): PrivilegeDetails
     @Mapping(target = "password", ignore = true)
     fun updateUserFromInput(userInput: UserInput, @MappingTarget user: User)
+    @Mapping(
+        target = "privilegeList",
+        source = "privileges",
+        defaultExpression = "java(java.util.Collections.emptySet())"
+    )
+    fun roleDetailsToRole(role: RoleDetails): Role
 
+    @Mapping(target="roleList", ignore = true)
+    fun privilegeDetailsToPrivilege(p: PrivilegeDetails): Privilege
     fun userListToUserListResult (userList: List<User>) : List<UserResult>
 }
 
@@ -244,3 +254,4 @@ interface EducationMapper {
     @Mapping(target = "student", ignore = true)
     fun updateEducationFromInput(educationInput: EducationInput, @MappingTarget education: Education)
 }
+

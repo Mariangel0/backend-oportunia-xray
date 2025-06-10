@@ -44,6 +44,12 @@ class AbstractUserService (
 
     @Autowired
     private val passwordEncoder: BCryptPasswordEncoder,
+
+    @Autowired
+    private val privilegeRepository: PrivilegeRepository,
+
+    @Autowired
+    private val roleRepository: RoleRepository,
 ): UserService {
 
     override fun findAll(): List<UserResult>? {
@@ -79,12 +85,29 @@ class AbstractUserService (
 
     override fun createUser(user: UserInput): UserResult? {
         val userEntity = userMapper.userInputToUser(user)
-
         userEntity.password = passwordEncoder.encode(user.password)
 
-        return userMapper.userToUserResult(
-            userRepository.save(userEntity)
-        )
+        val roleEntities = user.roles?.map { roleDetail ->
+            val role = roleRepository.findById(roleDetail.id!!)
+                .orElseThrow { NoSuchElementException("Role with ID ${roleDetail.id} not found") }
+
+            val privileges = roleDetail.privileges?.map { pd ->
+                val id = pd.id ?: throw IllegalArgumentException("Privilege ID is required")
+                privilegeRepository.findById(id).orElseThrow {
+                    NoSuchElementException("Privilege with ID $id not found in database")
+                }
+            }?.toSet() ?: emptySet()
+
+            role.privilegeList = privileges
+
+            role.privilegeList.size
+
+            role
+        }?.toSet() ?: emptySet()
+
+        userEntity.roles = roleEntities
+
+        return userMapper.userToUserResult(userRepository.save(userEntity))
     }
 
 
