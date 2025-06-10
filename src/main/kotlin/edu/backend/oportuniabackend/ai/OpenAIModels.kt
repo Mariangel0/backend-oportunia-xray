@@ -32,7 +32,8 @@ data class Choice(
 
 data class AnalyzedCVResponse(
     val recomendaciones: List<String>,
-    val comentarios: String
+    val comentarios: String,
+    val score: Float
 )
 
 data class MultipleChoiceQuestion(
