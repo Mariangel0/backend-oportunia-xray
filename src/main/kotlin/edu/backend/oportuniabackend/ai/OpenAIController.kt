@@ -1,5 +1,9 @@
 package edu.backend.oportuniabackend.ai
 
+import edu.backend.oportuniabackend.IAAnalysisDetails
+import edu.backend.oportuniabackend.IAAnalysisInput
+import edu.backend.oportuniabackend.IAAnalysisService
+import edu.backend.oportuniabackend.InterviewResult
 import kotlinx.coroutines.runBlocking
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -9,7 +13,8 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("\${url.ai}")
 class OpenAIController(
-    private val openAIService: OpenAIService
+    private val openAIService: OpenAIService,
+    private val iaAnalysisService: IAAnalysisService
 ) {
 
     @PostMapping(
@@ -21,7 +26,7 @@ class OpenAIController(
         @PathVariable studentId: Long,
         @RequestBody request: UserTextPrompt
     ): ChatResponse = runBlocking {
-        openAIService.chat(request)
+        openAIService.chat(request, studentId)
     }
 
     @PostMapping(
@@ -33,7 +38,7 @@ class OpenAIController(
         @PathVariable studentId: Long,
         @RequestBody input: UserMessage
     ): ChatResponse = runBlocking {
-        openAIService.continueInterview(input)
+        openAIService.continueInterview(studentId, input)
     }
 
     @PostMapping("/{studentId}/curriculum", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -61,5 +66,16 @@ class OpenAIController(
     ): ResponseEntity<MultipleChoiceEvaluation> = runBlocking {
         val result = openAIService.evaluateMultipleChoiceQuiz(studentId, request.selectedOption)
         ResponseEntity.ok(result)
+    }
+
+    @PostMapping("/{studentId}/interview/analyze-and-save")
+    fun analyzeAndSave(
+        @PathVariable studentId: Long,
+        @RequestBody interview: InterviewResult
+    ): ResponseEntity<IAAnalysisDetails> = runBlocking {
+        val analysisInput = openAIService.generateIAAnalysis(studentId, interview)
+
+        val saved = iaAnalysisService.create(analysisInput)
+        ResponseEntity.ok(saved)
     }
 }

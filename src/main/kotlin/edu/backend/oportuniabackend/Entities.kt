@@ -635,7 +635,14 @@ data class Interview(
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     var date: Date,
+
     var result: String,
+
+    @Column(name = "job_position")
+    var jobPosition: String = "",
+
+    @Column(name = "type")
+    var type: String = "",
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false, referencedColumnName = "id")

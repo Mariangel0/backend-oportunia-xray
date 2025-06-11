@@ -220,6 +220,8 @@ data class InterviewInput(
     var id: Long? = null,
     var date: Date? = null,
     var result: String? = null,
+    var jobPosition: String? = null,
+    var type: String? = null,
     var student: StudentInput? = null,
 )
 
@@ -232,6 +234,8 @@ data class InterviewResult(
     var id: Long,
     var date: Date? = null,
     var result: String? = null,
+    var jobPosition: String? = null,
+    var type: String? = null,
     var student: StudentResult? = null,
 )
 
