@@ -86,27 +86,29 @@ class AbstractUserService (
     override fun createUser(user: UserInput): UserResult? {
         val userEntity = userMapper.userInputToUser(user)
         userEntity.password = passwordEncoder.encode(user.password)
-
+        userEntity.tokenExpired = false
         val roleEntities = user.roles?.map { roleDetail ->
             val role = roleRepository.findById(roleDetail.id!!)
                 .orElseThrow { NoSuchElementException("Role with ID ${roleDetail.id} not found") }
 
+            println("ERROR AQUI")
             val privileges = roleDetail.privileges?.map { pd ->
                 val id = pd.id ?: throw IllegalArgumentException("Privilege ID is required")
                 privilegeRepository.findById(id).orElseThrow {
                     NoSuchElementException("Privilege with ID $id not found in database")
                 }
             }?.toSet() ?: emptySet()
-
+            println("ERROR AQUI2")
             role.privilegeList = privileges
-
+            println("ERROR AQUI3")
             role.privilegeList.size
-
+            println("ERROR AQUI4")
             role
         }?.toSet() ?: emptySet()
-
+        println("ERROR AQUI5")
         userEntity.roles = roleEntities
-
+        println("ERROR AQUI6")
+        println(userEntity)
         return userMapper.userToUserResult(userRepository.save(userEntity))
     }
 
@@ -171,6 +173,9 @@ class AbstractStudentService(
     @Autowired
     private val studentMapper: StudentMapper,
 
+    @Autowired
+    private val userRepository: UserRepository,
+
     ) : StudentService {
 
     override fun findAll(): List<StudentResult>? {
@@ -197,8 +202,17 @@ class AbstractStudentService(
 
 
     override fun createStudent(studentInput: StudentInput): StudentResult? {
+        val entity = studentMapper.studentInputToStudent(studentInput)
+
+        val user = studentInput.userId?.let {
+            userRepository.findById(it)
+                .orElseThrow { NoSuchElementException("User not found") }
+        }
+        if (user != null) {
+            entity.user = user
+        }
         return studentMapper.studentToStudentResult(
-            studentRepository.save(studentMapper.studentInputToStudent(studentInput))
+            studentRepository.save(entity)
         )
     }
 

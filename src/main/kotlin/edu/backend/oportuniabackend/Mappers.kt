@@ -4,34 +4,34 @@ import java.time.LocalDateTime
 
 //USERS
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE
+)
 interface UserMapper {
+
     fun userToUserResult(user: User): UserResult
-    fun userInputToUser(userInput: UserInput): User
-    fun roleSetToRoleDetailsSet(roles: Set<Role>): Set<RoleDetails>
 
-    @Mapping(source = "privilegeList", target = "privileges")
-    fun roleToRoleDetails(role: Role): RoleDetails
-    fun privilegeSetToPrivilegeDetailsSet(privileges: Set<Privilege>): Set<PrivilegeDetails>
-    fun privilegeToPrivilegeDetails(privilege: Privilege): PrivilegeDetails
+    fun userListToUserListResult(userList: List<User>): List<UserResult>
+
+    @Mapping(target = "privileges", source = "privilegeList")
+    fun roleToRoleDto(role: Role): RoleDto
+
+    fun privilegeToPrivilegeDto(privilege: Privilege): PrivilegeDto
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    fun userInputToUser(input: UserInput): User
+
     @Mapping(target = "password", ignore = true)
-    fun updateUserFromInput(userInput: UserInput, @MappingTarget user: User)
-    @Mapping(
-        target = "privilegeList",
-        source = "privileges",
-        defaultExpression = "java(java.util.Collections.emptySet())"
-    )
-    fun roleDetailsToRole(role: RoleDetails): Role
-
-    @Mapping(target="roleList", ignore = true)
-    fun privilegeDetailsToPrivilege(p: PrivilegeDetails): Privilege
-    fun userListToUserListResult (userList: List<User>) : List<UserResult>
+    @Mapping(target = "roles", ignore = true)
+    fun updateUserFromInput(input: UserInput, @MappingTarget user: User)
 }
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface StudentMapper {
     fun studentToStudentResult(student: Student): StudentResult
-
+    @Mapping(target = "user", ignore = true)
     fun studentInputToStudent(studentInput: StudentInput): Student
     @Mapping(target = "user", ignore = true)
     fun updateStudentFromInput(studentInput: StudentInput, @MappingTarget student: Student)

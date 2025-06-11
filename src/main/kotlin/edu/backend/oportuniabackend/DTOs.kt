@@ -75,6 +75,7 @@ data class StudentInput(
     var bornDate: String?=null,
     var location: String?=null,
     var user: UserInput?=null,
+    var userId : Long? = null
 )
 
 data class StudentResult(

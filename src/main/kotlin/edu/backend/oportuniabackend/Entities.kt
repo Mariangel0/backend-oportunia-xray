@@ -539,7 +539,12 @@ data class Curriculum(
 @Table(name = "education")
 data class Education(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+        name = "education_seq",
+        sequenceName = "education_seq",
+        allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "education_seq")
     var id: Long? = null,
 
     var name: String,
@@ -583,7 +588,12 @@ data class Education(
 @Table(name = "experiences")
 data class Experience(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+        name = "experience_seq",
+        sequenceName = "experience_seq",
+        allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "experience_seq")
     var id: Long? = null,
 
     var role: String,
