@@ -18,6 +18,73 @@ import org.springframework.web.multipart.MultipartFile
 import java.util.Optional
 import java.util.UUID
 
+
+@Service
+class CascadeUserDeletionService(
+    private val studentRepository: StudentRepository,
+    private val abilityRepository: AbilityRepository,
+    private val experienceRepository: ExperienceRepository,
+    private val educationRepository: EducationRepository,
+    private val curriculumRepository: CurriculumRepository,
+    private val interviewRepository: InterviewRepository,
+    private val streakRepository: StreakRepository,
+    private val studentProgressRepository: StudentProgressRepository,
+    private val companyReviewRepository: CompanyReviewRepository,
+    private val iaAnalysisRepository: IAAnalysisRepository,
+    private val userRepository: UserRepository
+) {
+    @Transactional
+    fun deleteUserAndRelatedEntities(userId: Long) {
+        val optionalStudent = studentRepository.findById(userId)
+        if (optionalStudent.isEmpty) {
+            throw NoSuchElementException("Student with userId $userId not found")
+        }
+
+        val student = optionalStudent.get()
+
+        val curriculums = curriculumRepository.findByStudentId(userId)
+        curriculums.forEach { curriculum ->
+            curriculum.id?.let {
+                iaAnalysisRepository.findByCurriculumId(it)?.let { ia ->
+                    iaAnalysisRepository.delete(ia)
+                }
+            }
+        }
+
+        val interviews = interviewRepository.findByStudentId(userId)
+        interviews.forEach { interview ->
+            interview.id?.let {
+                iaAnalysisRepository.findByInterviewId(it)?.let { ia ->
+                    iaAnalysisRepository.delete(ia)
+                }
+            }
+        }
+
+        student.streak?.let {
+            student.streak = null
+            streakRepository.delete(it)
+        }
+
+        student.studentProgress?.let {
+            student.studentProgress = null
+            studentProgressRepository.delete(it)
+        }
+
+        abilityRepository.deleteByStudentId(userId)
+        experienceRepository.deleteByStudentId(userId)
+        educationRepository.deleteByStudentId(userId)
+        curriculumRepository.deleteByStudentId(userId)
+        interviewRepository.deleteByStudentId(userId)
+        companyReviewRepository.deleteByStudentId(userId)
+
+        studentRepository.save(student)
+
+        studentRepository.deleteById(userId)
+        userRepository.deleteById(userId)
+    }
+}
+
+
 interface UserService {
     fun findAll(): List<UserResult>?
 
@@ -50,6 +117,10 @@ class AbstractUserService (
 
     @Autowired
     private val roleRepository: RoleRepository,
+
+    @Autowired
+    private val cascadeUserDeletionService: CascadeUserDeletionService
+
 ): UserService {
 
     override fun findAll(): List<UserResult>? {
@@ -131,11 +202,7 @@ class AbstractUserService (
 
     @Throws(NoSuchElementException::class)
     override fun deleteUser(id: Long) {
-        if (!userRepository.findById(id).isEmpty) {
-            userRepository.deleteById(id)
-        } else {
-            throw NoSuchElementException(String.format("The user with the id: %s not found!", id))
-        }
+        cascadeUserDeletionService.deleteUserAndRelatedEntities(id)
     }
 
     override fun getCurrentUser(): UserResult? {
@@ -401,26 +468,23 @@ class AbstractCompanyReviewService(
     private var companyRepository: CompanyRepository,
     @Autowired
     private var studentRepository: StudentRepository
-
 ) : CompanyReviewService {
 
     override fun findAll(): List<CompanyReviewInput>? {
         return companyReviewMapper.companyReviewListToCompanyReviewInputList(
-            (companyReviewRepository.findAll())
+            companyReviewRepository.findAll()
         )
     }
 
     override fun findAllOtro(): List<CompanyReviewResult>? {
         return companyReviewMapper.companyReviewListToCompanyReviewResultList(
-            (companyReviewRepository.findAll())
+            companyReviewRepository.findAll()
         )
     }
 
-
-
     override fun findByCompanyId(companyId: Long): List<CompanyReviewInput>? {
         return companyReviewMapper.companyReviewListToCompanyReviewInputList(
-            (companyReviewRepository.findByCompany(companyId))
+            companyReviewRepository.findByCompany(companyId)
         )
     }
 
@@ -428,60 +492,63 @@ class AbstractCompanyReviewService(
     override fun findById(id: Long): CompanyReviewResult? {
         val companyReview: Optional<CompanyReview> = companyReviewRepository.findById(id)
         if (companyReview.isEmpty) {
-            throw NoSuchElementException(
-                String.format(
-                    "The company review with the id: %s not found!", id)) }
+            throw NoSuchElementException("The company review with the id: $id not found!")
+        }
         return companyReviewMapper.companyReviewToCompanyReviewResult(companyReview.get())
     }
 
     override fun createCompanyReview(companyReviewInput: CompanyReviewInput): CompanyReviewResult? {
         val entity = companyReviewMapper.companyReviewInputToCompanyReview(companyReviewInput)
+
         companyReviewInput.student?.id?.let {
             entity.student = studentRepository.findById(it)
                 .orElseThrow { NoSuchElementException("Student with id $it not found") }
         }
+
         entity.company = companyReviewInput.company
-        return companyReviewMapper.companyReviewToCompanyReviewResult(
-            companyReviewRepository.save(entity)
-        )
+        val savedReview = companyReviewRepository.save(entity)
+
+        updateCompanyAverageRating(entity.company) // 👈 Actualiza el promedio
+
+        return companyReviewMapper.companyReviewToCompanyReviewResult(savedReview)
     }
 
     @Throws(NoSuchElementException::class)
-    override fun updateCompanyReview(
-        id: Long,
-        companyReviewInput: CompanyReviewInput
-    ): CompanyReviewResult? {
+    override fun updateCompanyReview(id: Long, companyReviewInput: CompanyReviewInput): CompanyReviewResult? {
         val companyReview: Optional<CompanyReview> =
             companyReviewRepository.findById(companyReviewInput.id!!)
         if (companyReview.isEmpty) {
-            throw NoSuchElementException(
-                String.format(
-                    "The company review with the id: %s not found!",
-                    companyReviewInput.id
-                )
-            )
+            throw NoSuchElementException("The company review with the id: ${companyReviewInput.id} not found!")
         }
         val companyReviewUpdated: CompanyReview = companyReview.get()
         companyReviewMapper.updateCompanyReviewFromInput(companyReviewInput, companyReviewUpdated)
-        return companyReviewMapper.companyReviewToCompanyReviewResult(
-            companyReviewRepository.save(
-                companyReviewUpdated
-            )
-        )
+        val saved = companyReviewRepository.save(companyReviewUpdated)
+
+        updateCompanyAverageRating(saved.company)
+
+        return companyReviewMapper.companyReviewToCompanyReviewResult(saved)
     }
 
     @Throws(NoSuchElementException::class)
     override fun deleteCompanyReview(id: Long) {
-        if (!companyReviewRepository.findById(id).isEmpty) {
+        val review = companyReviewRepository.findById(id)
+        if (review.isPresent) {
+            val companyId = review.get().company
             companyReviewRepository.deleteById(id)
+            updateCompanyAverageRating(companyId)
         } else {
-            throw NoSuchElementException(
-                String.format(
-                    "The company review with the id: %s not found!",
-                    id
-                )
-            )
+            throw NoSuchElementException("The company review with the id: $id not found!")
         }
+    }
+
+    private fun updateCompanyAverageRating(companyId: Long) {
+        val company = companyRepository.findById(companyId).orElseThrow {
+            NoSuchElementException("Company with id $companyId not found")
+        }
+        val reviews = companyReviewRepository.findByCompany(companyId)
+        val average = if (reviews.isEmpty()) 0f else reviews.map { it.rating }.average().toFloat()
+        company.rating = average
+        companyRepository.save(company)
     }
 }
 

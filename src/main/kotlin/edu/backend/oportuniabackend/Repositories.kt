@@ -1,5 +1,6 @@
 package edu.backend.oportuniabackend
 
+import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
@@ -27,6 +28,8 @@ interface AdminRepository : JpaRepository<Admin, Long>
 @Repository
 interface AbilityRepository : JpaRepository<Ability, Long>{
     fun findByStudentId(@Param("studentId") studentId: Long): List<Ability>
+    @Transactional
+    fun deleteByStudentId(@Param("studentId") studentId: Long)
 }
 
 @Repository
@@ -38,26 +41,36 @@ interface CompanyRepository : JpaRepository<Company, Long>
 @Repository
 interface CompanyReviewRepository : JpaRepository<CompanyReview, Long>{
     fun findByCompany(@Param("company") company: Long): List<CompanyReview>
+    @Transactional
+    fun deleteByStudentId(@Param("studentId") studentId: Long)
 }
 
 @Repository
 interface CurriculumRepository : JpaRepository<Curriculum, Long>{
     fun findByStudentId(@Param("studentId") studentId: Long): List<Curriculum>
+    @Transactional
+    fun deleteByStudentId(@Param("studentId") studentId: Long)
 }
 
 @Repository
 interface EducationRepository : JpaRepository<Education, Long>{
     fun findByStudentId(@Param("studentId") studentId: Long): List<Education>
+    @Transactional
+    fun deleteByStudentId(@Param("studentId") studentId: Long)
 }
 
 @Repository
 interface ExperienceRepository : JpaRepository<Experience, Long>{
     fun findByStudentId(@Param("studentId") studentId: Long): List<Experience>
+    @Transactional
+    fun deleteByStudentId(@Param("studentId") studentId: Long)
 }
 
 @Repository
 interface InterviewRepository : JpaRepository<Interview, Long>{
     fun findByStudentId(@Param("studentId") studentId: Long): List<Interview>
+    @Transactional
+    fun deleteByStudentId(@Param("studentId") studentId: Long)
 }
 
 @Repository
@@ -74,11 +87,15 @@ interface NotificationRepository : JpaRepository<Notification, Long>{
 @Repository
 interface StreakRepository : JpaRepository<Streak, Long>{
     fun findByStudentId(@Param("studentId") studentId: Long): Streak?
+    @Transactional
+    fun deleteByStudentId(@Param("studentId") studentId: Long)
 }
 
 @Repository
 interface StudentProgressRepository : JpaRepository<StudentProgress, Long>{
     fun findByStudentId(@Param("studentId") studentId: Long): StudentProgress?
+    @Transactional
+    fun deleteByStudentId(@Param("studentId") studentId: Long)
 }
 
 
