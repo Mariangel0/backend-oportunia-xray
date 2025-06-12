@@ -308,7 +308,8 @@ data class StreakResult(
     var id: Long? = null,
     var days: Int? = null,
     var lastActivity: Date? = null,
-    var bestStreak: Int? = null
+    var bestStreak: Int? = null,
+    var student: StudentResult? = null,
 )
 
 // StudentProgress
