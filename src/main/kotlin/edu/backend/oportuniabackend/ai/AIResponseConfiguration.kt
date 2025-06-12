@@ -84,17 +84,17 @@ object AIResponseConfiguration {
         2. Un comentario general con observaciones.
         3. Un puntaje numérico de calidad entre 0 y 100 (donde 100 es excelente).
         
-        El formato de respuesta debe ser estrictamente en JSON, sin ningún carácter adicional:
+        Devuelve únicamente un JSON válido sin ningún texto adicional, sin comillas externas ni formato Markdown.
 
+        Ejemplo exacto:
         {
-          "recomendaciones": ["recomendación 1", "recomendación 2", "..."],
-          "comentarios": "Comentario general sobre el currículum",
-          "score": 85.5
+            "recomendaciones": ["..."],
+            "comentarios": "...",
+            "score": 85.5
         }
-
         El campo "score" debe reflejar objetivamente la calidad del currículum considerando estructura, redacción, claridad, logros cuantificables, habilidades técnicas, etc.
 
-        Analiza el siguiente texto de currículum y genera la respuesta:
+        Analiza el siguiente texto de currículum. Devuelve solo el JSON:
         """.trimIndent()
     }
 
