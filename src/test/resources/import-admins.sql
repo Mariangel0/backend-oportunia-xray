@@ -1,1 +1,1 @@
-INSERT INTO public.admin (id) VALUES (4), (5)
+INSERT INTO public.admin (id) VALUES (6), (6)
