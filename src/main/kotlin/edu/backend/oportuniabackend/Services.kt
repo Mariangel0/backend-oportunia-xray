@@ -42,14 +42,14 @@ class CascadeUserDeletionService(
 
         val student = optionalStudent.get()
 
-        val curriculums = curriculumRepository.findByStudentId(userId)
-        curriculums.forEach { curriculum ->
-            curriculum.id?.let {
-                iaAnalysisRepository.findByCurriculumId(it)?.let { ia ->
-                    iaAnalysisRepository.delete(ia)
-                }
-            }
-        }
+//        val curriculums = curriculumRepository.findByStudentId(userId)
+//        curriculums.forEach { curriculum ->
+//            curriculum.id?.let {
+//                iaAnalysisRepository.findByCurriculumId(it)?.let { ia ->
+//                    iaAnalysisRepository.delete(ia)
+//                }
+//            }
+//        }
 
         val interviews = interviewRepository.findByStudentId(userId)
         interviews.forEach { interview ->
