@@ -134,6 +134,7 @@ interface CompanyMapper {
     fun companyToCompanyResultLarge(company: Company): CompanyResultLarge
 
     @Mapping(target = "companyReviewList", expression = "java(java.util.Collections.emptyList())")
+    @Mapping(target = "rating", ignore = true)
     fun companyInputToCompany(companyInput: CompanyInput): Company
 
     fun companyListToCompanyListResult(companyList: List<Company>): List<CompanyResult>
@@ -141,9 +142,9 @@ interface CompanyMapper {
     fun companyListToCompanyListResultLarge(companyList: List<Company>): List<CompanyResultLarge>
 
     @Mapping(target = "companyReviewList", ignore = true)
+    @Mapping(target = "rating", ignore = true) // ✅ para evitar que update lo modifique
     fun updateCompanyFromInput(companyInput: CompanyInput, @MappingTarget company: Company)
 }
-
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CompanyReviewMapper {
