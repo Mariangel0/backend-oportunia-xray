@@ -12,6 +12,8 @@ import edu.backend.oportuniabackend.IAAnalysisService
 import edu.backend.oportuniabackend.Interview
 import edu.backend.oportuniabackend.InterviewRepository
 import edu.backend.oportuniabackend.InterviewResult
+import edu.backend.oportuniabackend.Streak
+import edu.backend.oportuniabackend.StreakRepository
 import edu.backend.oportuniabackend.StudentRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.Calendar
 import java.util.Date
 
 interface AIService {
@@ -43,7 +46,8 @@ class OpenAIService(
     private val studentRepository: StudentRepository,
     private val curriculumRepository: CurriculumRepository,
     private val interviewRepository: InterviewRepository,
-    private val iAAnalysisRepository: IAAnalysisRepository
+    private val iAAnalysisRepository: IAAnalysisRepository,
+    private val streakRepository: StreakRepository,
 ) : AIService {
 
     private val conversationHistories = mutableMapOf<String, MutableList<Message>>()
@@ -218,5 +222,43 @@ class OpenAIService(
             date = Date(),
             interview = interview,
         )
+    }
+
+    private fun updateOrCreateStreak(studentId: Long) {
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with ID $studentId not found") }
+
+        val existingStreak = streakRepository.findByStudentId(studentId)
+
+        val today = Date()
+        val calendar = Calendar.getInstance().apply { time = today }
+
+        if (existingStreak != null) {
+            val lastDate = existingStreak.lastActivity
+            val lastCal = Calendar.getInstance().apply { time = lastDate }
+
+            val diffDays = ((today.time - lastDate.time) / (1000 * 60 * 60 * 24)).toInt()
+
+            when (diffDays) {
+                0 -> return // ya se actualizó hoy
+                1 -> existingStreak.days += 1 // día siguiente
+                else -> existingStreak.days = 1 // se reinicia
+            }
+
+            existingStreak.lastActivity = today
+            if (existingStreak.days > existingStreak.bestStreak) {
+                existingStreak.bestStreak = existingStreak.days
+            }
+
+            streakRepository.save(existingStreak)
+        } else {
+            val newStreak = Streak(
+                days = 1,
+                lastActivity = today,
+                bestStreak = 1,
+                student = student
+            )
+            streakRepository.save(newStreak)
+        }
     }
 }

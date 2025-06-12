@@ -73,4 +73,5 @@ class OpenAIController(
         val result = openAIService.evaluateMultipleChoiceQuiz(studentId, request.selectedOption)
         ResponseEntity.ok(result)
     }
+
 }

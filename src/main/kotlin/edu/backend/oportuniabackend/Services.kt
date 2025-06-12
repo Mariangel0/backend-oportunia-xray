@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.util.Date
 import java.util.Optional
 import java.util.UUID
 
@@ -1104,6 +1105,8 @@ interface StreakService {
     fun create(streakInput: StreakInput): StreakResult?
     fun update(streakInput: StreakInput): StreakResult?
     fun deleteById(id: Long)
+    fun completeQuizAndUpdateStreak(studentId: Long): StreakResult?
+    fun findByStudentId(studentId: Long): StreakResult?
 }
 
 @Service
@@ -1177,6 +1180,47 @@ class AbstractStreakService(
         streak.student?.streak = null
 
         streakRepository.delete(streak)
+    }
+
+    override fun completeQuizAndUpdateStreak(studentId: Long): StreakResult? {
+        val student = studentRepository.findById(studentId)
+            .orElseThrow { NoSuchElementException("Student with ID $studentId not found") }
+
+        val today = Date()
+        val existing = streakRepository.findByStudentId(studentId)
+
+        val updatedStreak = if (existing != null) {
+            val lastDate = existing.lastActivity
+            val diffDays = ((today.time - lastDate.time) / (1000 * 60 * 60 * 24)).toInt()
+
+            when (diffDays) {
+                0 -> return streakMapper.streakToStreakResult(existing) // Ya actualizado hoy
+                1 -> existing.days += 1
+                else -> existing.days = 1
+            }
+
+            existing.lastActivity = today
+            if (existing.days > existing.bestStreak) {
+                existing.bestStreak = existing.days
+            }
+
+            streakRepository.save(existing)
+        } else {
+            val newStreak = Streak(
+                days = 1,
+                lastActivity = today,
+                bestStreak = 1,
+                student = student
+            )
+            streakRepository.save(newStreak)
+        }
+
+        return streakMapper.streakToStreakResult(updatedStreak)
+    }
+
+    override fun findByStudentId(studentId: Long): StreakResult? {
+        return streakRepository.findByStudentId(studentId)
+            ?.let { streakMapper.streakToStreakResult(it) }
     }
 }
 

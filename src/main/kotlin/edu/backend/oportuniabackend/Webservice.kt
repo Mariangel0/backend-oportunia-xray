@@ -434,6 +434,19 @@ class StreakController(private val streakService: StreakService) {
     fun deleteById(@PathVariable id: Long) {
         streakService.deleteById(id)
     }
+
+    @PostMapping("completeQuiz/{studentId}")
+    @ResponseBody
+    fun completeQuiz(@PathVariable studentId: Long): ResponseEntity<StreakResult> {
+        val updated = streakService.completeQuizAndUpdateStreak(studentId)
+            ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(updated)
+    }
+
+    @GetMapping("student/{studentId}")
+    @ResponseBody
+    fun findByStudentId(@PathVariable studentId: Long) = streakService.findByStudentId(studentId)
+
 }
 
 @RestController
