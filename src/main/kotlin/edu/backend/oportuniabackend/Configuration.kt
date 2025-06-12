@@ -91,10 +91,14 @@ class JwtSecurityConfiguration {
                 it
                     .requestMatchers("/".plus(URL_UNSECURE).plus("/**")).permitAll()
                     .requestMatchers("/error").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/users").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/students").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/educations").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/experiences").permitAll()
                     .requestMatchers(HttpMethod.POST, URL_SIGNUP).permitAll()
                     .requestMatchers("/**").authenticated()
             }
-            .sessionManagement{
+            .sessionManagement{1
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authenticationProvider(authenticationProvider())

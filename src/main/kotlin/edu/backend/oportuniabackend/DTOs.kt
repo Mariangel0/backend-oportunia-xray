@@ -75,6 +75,7 @@ data class StudentInput(
     var bornDate: String?=null,
     var location: String?=null,
     var user: UserInput?=null,
+    var userId : Long? = null
 )
 
 data class StudentResult(
@@ -84,7 +85,8 @@ data class StudentResult(
     var linkedinUrl: String,
     var githubUrl: String,
     var bornDate: String,
-    var location: String
+    var location: String,
+    var userId : Long? = null
 )
 
 data class StudentReview(

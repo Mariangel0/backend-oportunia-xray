@@ -3,6 +3,8 @@ package edu.backend.oportuniabackend
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.util.*
 import jakarta.persistence.*
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDateTime
 
 
@@ -40,7 +42,12 @@ data class User(
     @Column(name = "token_expired")
     var tokenExpired: Boolean? = null,
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(
+        mappedBy = "user",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     var notificationList: List<Notification>? = null,
 
 
@@ -314,7 +321,8 @@ data class Company(
     @Column(name = "website_url")
     var websiteUrl: String,
 
-    var rating: Float,
+    @Column(name = "rating")
+    var rating: Float = 0f,
 
     @OneToMany(mappedBy = "company")
     var companyReviewList: List<CompanyReview> = emptyList(),
@@ -539,7 +547,12 @@ data class Curriculum(
 @Table(name = "education")
 data class Education(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+        name = "education_seq",
+        sequenceName = "education_seq",
+        allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "education_seq")
     var id: Long? = null,
 
     var name: String,
@@ -583,7 +596,12 @@ data class Education(
 @Table(name = "experiences")
 data class Experience(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+        name = "experience_seq",
+        sequenceName = "experience_seq",
+        allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "experience_seq")
     var id: Long? = null,
 
     var role: String,
