@@ -86,7 +86,6 @@ data class StudentResult(
     var githubUrl: String,
     var bornDate: String,
     var location: String,
-    var userId : Long? = null
 )
 
 data class StudentReview(
