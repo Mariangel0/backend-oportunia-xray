@@ -39,7 +39,7 @@ import org.springframework.test.context.jdbc.Sql
 )
 @Sql(
     scripts = ["/import-users.sql", "/import-companies.sql", "/import-admins.sql" ,"/import-student.sql", "/import-student_progress.sql", "/import-experiences.sql" , "/import-interviews.sql","/import-companies_reviews.sql", "/import-advices.sql", "/import-curriculums.sql",
-        "/import-abilities.sql","/import-ia_analysis.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql"],
+        "/import-abilities.sql","/import-ia_analysis.sql", "/import-education.sql", "/import-notifications.sql", "/import-streaks.sql", "/sync_sequences_with_max_and_increment.sql"],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 class LoadInitData (
@@ -166,8 +166,9 @@ class LoadInitData (
     @Test
     fun testAdviceFindById() {
         val advice: Advice = adviceRepository.findById(3).get()
-        Assertions.assertTrue(advice.id.toInt() == 3)
+        Assertions.assertTrue(advice.id?.toInt()  == 3)
     }
+
 
     // Admin
     @Test

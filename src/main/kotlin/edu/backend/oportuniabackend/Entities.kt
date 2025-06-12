@@ -23,6 +23,8 @@ data class User(
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     var id: Long? = null,
 
+
+
     @Column(name = "first_name")
     var firstName: String? = null,
 
@@ -188,6 +190,7 @@ data class Student(
     @Id
     var id: Long? = null,
 
+
     var description: String? = null,
     var premiun: Boolean? = null,
 
@@ -306,8 +309,14 @@ data class Admin(
 @Table(name = "companies")
 data class Company(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "companie_seq")
+    @SequenceGenerator(
+        name = "companie_seq",
+        sequenceName = "companie_seq",
+        allocationSize = 1
+    )
     var id: Long? = null,
+
 
     var name: String,
     var description: String,
@@ -368,7 +377,12 @@ data class Company(
 data class Ability(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ability_seq")
+    @SequenceGenerator(
+        name = "ability_seq",
+        sequenceName = "ability_seq",
+        allocationSize = 1
+    )
     var id: Long? = null,
 
     var name: String,
@@ -407,8 +421,13 @@ data class Ability(
 @Table(name = "advices")
 data class Advice(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long,
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "advice_seq")
+    @SequenceGenerator(
+        name = "advice_seq",
+        sequenceName = "advice_seq",
+        allocationSize = 1
+    )
+    var id: Long? = null,
 
     var question: String,
 
@@ -445,12 +464,12 @@ data class Advice(
 @Table(name = "companies_reviews")
 data class CompanyReview(
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "company_review_seq")
     @SequenceGenerator(
         name = "company_review_seq",
         sequenceName = "company_review_seq",
         allocationSize = 1
     )
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "company_review_seq")
     var id: Long? = null,
 
     var rating: Float,
@@ -501,7 +520,12 @@ data class CompanyReview(
 @Table(name = "curriculums")
 data class Curriculum(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "curriculums_seq")
+    @SequenceGenerator(
+        name = "curriculums_seq",
+        sequenceName = "curriculums_seq",
+        allocationSize = 1
+    )
     var id: Long? = null,
 
     @Column(name = "archive_url")
@@ -547,13 +571,13 @@ data class Curriculum(
 @Table(name = "education")
 data class Education(
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "education_seq")
     @SequenceGenerator(
         name = "education_seq",
         sequenceName = "education_seq",
         allocationSize = 1
     )
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "education_seq")
-    var id: Long? = null,
+    val id: Long? = null,
 
     var name: String,
     var institution: String,
@@ -596,12 +620,12 @@ data class Education(
 @Table(name = "experiences")
 data class Experience(
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "experience_seq")
     @SequenceGenerator(
         name = "experience_seq",
         sequenceName = "experience_seq",
         allocationSize = 1
     )
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "experience_seq")
     var id: Long? = null,
 
     var role: String,
@@ -647,7 +671,12 @@ data class Experience(
 @Table(name = "interview")
 data class Interview(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "interview_seq")
+    @SequenceGenerator(
+        name = "interview_seq",
+        sequenceName = "interview_seq",
+        allocationSize = 1
+    )
     var id: Long? = null,
 
     @Temporal(TemporalType.DATE)
@@ -699,7 +728,12 @@ data class Interview(
 @Table(name = "ia_analysis")
 data class IAAnalysis(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_seq")
+    @SequenceGenerator(
+        name = "analysis_seq",
+        sequenceName = "analysis_seq",
+        allocationSize = 1
+    )
     var id: Long? = null,
 
     @Column(columnDefinition = "TEXT")
@@ -799,7 +833,12 @@ data class Notification(
 @Table(name = "streaks")
 data class Streak(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "streak_seq")
+    @SequenceGenerator(
+        name = "streak_seq",
+        sequenceName = "streak_seq",
+        allocationSize = 1
+    )
     var id: Long? = null,
 
     var days: Int,
@@ -906,7 +945,12 @@ data class StudentProgress(
 @Table(name = "quizzes")
 data class Quiz(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "quiz_seq")
+    @SequenceGenerator(
+        name = "quiz_seq",
+        sequenceName = "quiz_seq",
+        allocationSize = 1
+    )
     var id: Long? = null,
 
     @OneToOne
