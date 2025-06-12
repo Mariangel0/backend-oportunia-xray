@@ -26,6 +26,11 @@ data class ChatResponse(
     val choices: List<Choice>?
 )
 
+data class InterviewChatResponse(
+    val choices: List<Choice>?,
+    val interviewId: Long? = null
+)
+
 data class Choice(
     val message: Message
 )

@@ -171,7 +171,6 @@ interface IAAnalysisMapper {
 
     @Mapping(target = "date", defaultExpression = "java(new java.util.Date())")
     @Mapping(target = "interview", ignore = true)
-    @Mapping(target = "curriculum", ignore = true)
     fun iaAnalysisInputToIAAnalysis(iaAnalysisInput: IAAnalysisInput): IAAnalysis
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

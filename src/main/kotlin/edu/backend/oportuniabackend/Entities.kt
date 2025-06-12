@@ -684,7 +684,12 @@ data class IAAnalysis(
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
 
+    @Column(columnDefinition = "TEXT")
     var recommendation: String,
+
+    @Column(columnDefinition = "TEXT")
+    var comment: String,
+
     var score: Float,
 
     @Temporal(TemporalType.DATE)
@@ -695,12 +700,9 @@ data class IAAnalysis(
     @JoinColumn(name = "interview_id", unique = true, referencedColumnName = "id")
     var interview: Interview? = null,
 
-    @OneToOne
-    @JoinColumn(name = "curriculum_id", unique = true, referencedColumnName = "id")
-    var curriculum: Curriculum? = null,
 ) {
     override fun toString(): String {
-        return "IAAnalysis(id=$id, recommendations='$recommendation, score=$score, date=$date, interview=$interview, curriculum=$curriculum)"
+        return "IAAnalysis(id=$id, recommendations='$recommendation, score=$score, date=$date, interview=$interview)"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -714,7 +716,6 @@ data class IAAnalysis(
         if (recommendation != other.recommendation) return false
         if (date != other.date) return false
         if (interview != other.interview) return false
-        if (curriculum != other.curriculum) return false
 
         return true
     }
@@ -725,7 +726,6 @@ data class IAAnalysis(
         result = 31 * result + recommendation.hashCode()
         result = 31 * result + date.hashCode()
         result = 31 * result + interview.hashCode()
-        result = 31 * result + curriculum.hashCode()
         return result
     }
 }

@@ -130,14 +130,25 @@ object AIResponseConfiguration {
 
     fun getIAEvaluationPrompt(transcript: String): String {
         return """
-        Eres un evaluador de entrevistas. Genera una recomendación y un puntaje (de 0.0 a 10.0) basado en la siguiente conversación:
-        $transcript
+        Eres un evaluador de entrevistas simuladas de trabajo. A partir de la siguiente transcripción de una entrevista entre candidato y entrevistador, debes generar una evaluación clara y objetiva.
 
-        Devuelve únicamente este JSON:
+        🔹 Evalúa el desempeño general del candidato con base en la calidad de sus respuestas, claridad, experiencia, adecuación al puesto, habilidades blandas y técnicas.
+
+        🔹 Debes devolver ÚNICAMENTE un JSON  con la siguiente estructura:
+
         {
-          "recommendation": "...",
-          "score": 0.0
+          "recommendation": ["Cosa que mejorar 1", "Cosa que mejorar 2", "..."],
+          "comment": "Explicación general de cómo fue la entrevista y el desempeño del candidato.",
+          "score": 0.0 // Un número entre 0.0 y 100.0
         }
-        """.trimIndent()
+
+        Ejemplos válidos de "resultado":
+        - "Aprobado" → si el candidato tuvo buen desempeño y está listo para ser contratado.
+        - "Rechazado" → si el desempeño fue muy débil.
+        - "Considerar para otra entrevista" → si mostró potencial pero se requiere más información.
+
+        Evalúa la siguiente entrevista:
+        $transcript
+    """.trimIndent()
     }
 }

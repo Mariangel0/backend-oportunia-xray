@@ -179,20 +179,20 @@ data class CompanyReviewResult(
 data class IAAnalysisInput(
     var id: Long?=null,
     var recommendation: String?=null,
+    var comment: String?=null,
     var score: Float?=null,
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     var date: Date?=null,
-    var interview: InterviewResult? = null,
-    var curriculum: CurriculumResult? = null,
+    var interview: InterviewResult? = null
 )
 
 data class IAAnalysisDetails(
     var id: Long,
     var recommendation: String,
-    var interview: InterviewResult,
-    var curriculum: CurriculumResult,
+    var comment: String?=null,
     var score: Float,
     var date: Date,
+    var interview: InterviewResult,
 )
 
 data class CurriculumInput(
@@ -212,7 +212,6 @@ data class CurriculumResult(
 data class CurriculumAnalysisInput(
     var id: Long? = null,
     var feedback: String? = null,
-    var iaAnalysis: IAAnalysisInput? = null
 )
 
 

@@ -1,9 +1,6 @@
 package edu.backend.oportuniabackend.ai
 
-import edu.backend.oportuniabackend.IAAnalysisDetails
-import edu.backend.oportuniabackend.IAAnalysisInput
 import edu.backend.oportuniabackend.IAAnalysisService
-import edu.backend.oportuniabackend.InterviewResult
 import kotlinx.coroutines.runBlocking
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -37,11 +34,14 @@ class OpenAIController(
     fun continueChat(
         @PathVariable studentId: Long,
         @RequestBody input: UserMessage
-    ): ChatResponse = runBlocking {
+    ): InterviewChatResponse = runBlocking {
         openAIService.continueInterview(studentId, input)
     }
 
-    @PostMapping("/{studentId}/curriculum", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(
+        "/{studentId}/curriculum",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+    )
     fun uploadCurriculum(
         @RequestParam("file") file: MultipartFile,
         @PathVariable studentId: Long
@@ -50,7 +50,10 @@ class OpenAIController(
         return ResponseEntity.ok(result)
     }
 
-    @PostMapping("/{studentId}/quiz/generate", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(
+        "/{studentId}/quiz/generate",
+        consumes = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun generateMCQuizForUser(
         @PathVariable studentId: Long,
         @RequestBody request: MultipleChoiceGenerationRequest
@@ -59,23 +62,15 @@ class OpenAIController(
         ResponseEntity.ok(result)
     }
 
-    @PostMapping("/{studentId}/quiz/evaluate", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(
+        "/{studentId}/quiz/evaluate",
+        consumes = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun evaluateMCQuizForUser(
         @PathVariable studentId: Long,
         @RequestBody request: MultipleChoiceAnswer
     ): ResponseEntity<MultipleChoiceEvaluation> = runBlocking {
         val result = openAIService.evaluateMultipleChoiceQuiz(studentId, request.selectedOption)
         ResponseEntity.ok(result)
-    }
-
-    @PostMapping("/{studentId}/interview/analyze-and-save")
-    fun analyzeAndSave(
-        @PathVariable studentId: Long,
-        @RequestBody interview: InterviewResult
-    ): ResponseEntity<IAAnalysisDetails> = runBlocking {
-        val analysisInput = openAIService.generateIAAnalysis(studentId, interview)
-
-        val saved = iaAnalysisService.create(analysisInput)
-        ResponseEntity.ok(saved)
     }
 }

@@ -63,7 +63,8 @@ interface InterviewRepository : JpaRepository<Interview, Long>{
 @Repository
 interface IAAnalysisRepository : JpaRepository<IAAnalysis, Long>{
     fun findByInterviewId(interviewId: Long): IAAnalysis?
-    fun findByCurriculumId(curriculumId: Long): IAAnalysis?
+
+
 }
 
 @Repository

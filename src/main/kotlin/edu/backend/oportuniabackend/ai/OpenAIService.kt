@@ -5,7 +5,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import edu.backend.oportuniabackend.Curriculum
 import edu.backend.oportuniabackend.CurriculumRepository
 import edu.backend.oportuniabackend.CurriculumResult
+import edu.backend.oportuniabackend.IAAnalysis
 import edu.backend.oportuniabackend.IAAnalysisInput
+import edu.backend.oportuniabackend.IAAnalysisRepository
+import edu.backend.oportuniabackend.IAAnalysisService
 import edu.backend.oportuniabackend.Interview
 import edu.backend.oportuniabackend.InterviewRepository
 import edu.backend.oportuniabackend.InterviewResult
@@ -23,7 +26,7 @@ import java.util.Date
 interface AIService {
     suspend fun chat(prompt: UserTextPrompt, userId: Long): ChatResponse
 
-    suspend fun continueInterview(studentId: Long, input: UserMessage): ChatResponse
+    suspend fun continueInterview(studentId: Long, input: UserMessage): InterviewChatResponse
 
     suspend fun uploadCurriculum(file: MultipartFile, studentId: Long): AnalyzedCVResponse
 
@@ -31,7 +34,7 @@ interface AIService {
 
     suspend fun evaluateMultipleChoiceQuiz(studentId: Long, selectedOption: String): MultipleChoiceEvaluation
 
-    suspend fun generateIAAnalysis(studentId: Long, interview: InterviewResult, curriculum: CurriculumResult? = null): IAAnalysisInput
+    suspend fun generateIAAnalysis(studentId: Long, interview: Interview): IAAnalysis
 }
 
 @Service
@@ -39,7 +42,8 @@ class OpenAIService(
     private val client: OpenAIClient,
     private val studentRepository: StudentRepository,
     private val curriculumRepository: CurriculumRepository,
-    private val interviewRepository: InterviewRepository
+    private val interviewRepository: InterviewRepository,
+    private val iAAnalysisRepository: IAAnalysisRepository
 ) : AIService {
 
     private val conversationHistories = mutableMapOf<String, MutableList<Message>>()
@@ -69,7 +73,7 @@ class OpenAIService(
         return response
     }
 
-    override suspend fun continueInterview(studentId: Long, input: UserMessage): ChatResponse {
+    override suspend fun continueInterview(studentId: Long, input: UserMessage): InterviewChatResponse {
         val key = studentId.toString()
         val userHistory = conversationHistories[key]
             ?: throw IllegalStateException("No se ha iniciado una entrevista para este id: $studentId")
@@ -78,39 +82,42 @@ class OpenAIService(
 
         val userMessagesCount = userHistory.count { it.role == "user" }
 
-        if (userMessagesCount >= 5) {
-            // Solo agregar mensaje de cierre si aún no se ha agregado
-            if (userHistory.none { it.content.contains("esta entrevista ha concluido", ignoreCase = true) }) {
-                val finalMessage = Message(
-                    role = "assistant",
-                    content = AIResponseConfiguration.getInterviewClosureMessage()
-                )
-                userHistory.add(finalMessage)
+        if (userMessagesCount >= 6 &&
+            userHistory.none { it.content.contains("esta entrevista ha concluido", ignoreCase = true) }
+        ) {
+            val finalMessage = Message(
+                role = "assistant",
+                content = AIResponseConfiguration.getInterviewClosureMessage()
+            )
+            userHistory.add(finalMessage)
 
-                val student = studentRepository.findById(studentId)
-                    .orElseThrow { NoSuchElementException("Estudiante con id=$studentId no encontrado") }
+            val student = studentRepository.findById(studentId)
+                .orElseThrow { NoSuchElementException("Estudiante con id=$studentId no encontrado") }
 
-                val (jobPosition, type) = interviewMeta[key] ?: ("" to "")
+            val (jobPosition, type) = interviewMeta[key] ?: ("" to "")
 
-                val interview = Interview(
-                    date = Date(),
-                    result = "Completada automáticamente",
-                    jobPosition = jobPosition,
-                    type = type,
-                    student = student
-                )
+            val interview = Interview(
+                date = Date(),
+                result = "Completada automáticamente",
+                jobPosition = jobPosition,
+                type = type,
+                student = student
+            )
 
-                interviewRepository.save(interview)
+            val savedInterview = interviewRepository.save(interview)
 
-                // Opcional: limpiar conversación para evitar reutilización
-                conversationHistories.remove(key)
-                interviewMeta.remove(key)
-            }
+            val iaAnalysis = generateIAAnalysis(studentId, savedInterview)
+            iAAnalysisRepository.save(iaAnalysis)
 
-            return ChatResponse(choices = listOf(Choice(message = Message("assistant", AIResponseConfiguration.getInterviewClosureMessage()))))
+            conversationHistories.remove(key)
+            interviewMeta.remove(key)
+
+            return InterviewChatResponse(
+                choices = listOf(Choice(Message("assistant", finalMessage.content))),
+                interviewId = iaAnalysis.id
+            )
         }
 
-        // Si aún no termina, enviar la pregunta como respuesta
         val request = ChatRequest(messages = userHistory)
         val response = client.sendPrompt(request)
 
@@ -118,9 +125,11 @@ class OpenAIService(
             userHistory.add(it)
         }
 
-        return response
+        return InterviewChatResponse(
+            choices = response.choices,
+            interviewId = null
+        )
     }
-
 
 
     override suspend fun uploadCurriculum(file: MultipartFile, studentId: Long): AnalyzedCVResponse {
@@ -160,7 +169,6 @@ class OpenAIService(
 
     override suspend fun generateMultipleChoiceQuiz(studentId: Long, topic: String, difficulty: String): MultipleChoiceQuestion {
         val promptText = AIResponseConfiguration.getQuizPrompt(topic, difficulty)
-
         val messages = listOf(Message(role = "user", content = promptText))
         val response = client.sendPrompt(ChatRequest(messages = messages))
 
@@ -187,7 +195,7 @@ class OpenAIService(
         return jacksonObjectMapper().readValue(jsonString)
     }
 
-    override suspend fun generateIAAnalysis(studentId: Long, interview: InterviewResult, curriculum: CurriculumResult?): IAAnalysisInput {
+    override suspend fun generateIAAnalysis(studentId: Long, interview: Interview): IAAnalysis {
         val history = conversationHistories[studentId.toString()]
             ?: throw IllegalStateException("No hay historial para este estudiante.")
 
@@ -200,14 +208,15 @@ class OpenAIService(
 
         val parsed = jacksonObjectMapper().readValue<Map<String, Any>>(content)
         val recommendation = parsed["recommendation"]?.toString() ?: "Sin recomendación"
+        val comment = parsed["comment"]?.toString() ?: "Sin comentario"
         val score = parsed["score"]?.toString()?.toFloatOrNull() ?: 0.0f
 
-        return IAAnalysisInput(
+        return IAAnalysis(
             recommendation = recommendation,
+            comment = comment,
             score = score,
             date = Date(),
             interview = interview,
-            curriculum = curriculum
         )
     }
 }

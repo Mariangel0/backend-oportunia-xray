@@ -864,11 +864,7 @@ class AbstractIAAnalysisService(
         val interview = interviewRepository.findById(iaAnalysisInput.interview?.id!!)
             .orElseThrow { NoSuchElementException("Interview not found") }
 
-        val curriculum = curriculumRepository.findById(iaAnalysisInput.curriculum?.id!!)
-            .orElseThrow { NoSuchElementException("Curriculum not found") }
-
         iaAnalysis.interview = interview
-        iaAnalysis.curriculum = curriculum
 
         return iaAnalysisMapper.iaAnalysisToIAAnalysisDetails(iaAnalysisRepository.save(iaAnalysis))
     }
