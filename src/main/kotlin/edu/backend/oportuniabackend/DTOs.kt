@@ -69,23 +69,25 @@ data class UserReview(
 data class StudentInput(
     var id: Long?=null,
     var description: String?=null,
-    var premiun: Boolean?=null,
+    var premium: Boolean?=null,
     var linkedinUrl: String?=null,
     var githubUrl: String?=null,
     var bornDate: String?=null,
     var location: String?=null,
     var user: UserInput?=null,
+    var userId: Long?=null,
 )
 
 data class StudentResult(
     var id: Long,
     var description: String,
-    var premiun: Boolean,
+    var premium: Boolean,
     var linkedinUrl: String,
     var githubUrl: String,
     var bornDate: String,
     var location: String,
     var user: UserResult?=null,
+    var userId: Long?=null,
 )
 
 data class StudentReview(

@@ -208,7 +208,7 @@ data class Student(
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
-    var user: User,
+    var user: User? = null,
 
     @OneToMany(mappedBy = "student")
     var abilitiesList: List<Ability>? = null,

@@ -268,9 +268,12 @@ class AbstractStudentService(
     override fun createStudent(studentInput: StudentInput): StudentResult? {
         val entity = studentMapper.studentInputToStudent(studentInput)
 
-        val user = studentInput.user?.id?.let {
-            userRepository.findById(it).orElseThrow { NoSuchElementException("User not found") }
-        }
+
+        val userId = studentInput.userId
+
+        val user =
+            userId?.let { userRepository.findById(it).orElseThrow { NoSuchElementException("User not found") } }
+
 
         if (user != null) {
             entity.user = user
