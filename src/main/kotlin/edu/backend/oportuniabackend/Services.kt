@@ -237,6 +237,9 @@ class AbstractStudentService(
     @Autowired
     private val userRepository: UserRepository,
 
+    @Autowired
+    private val streakRepository: StreakRepository,
+
     ) : StudentService {
 
     override fun findAll(): List<StudentResult>? {
@@ -265,18 +268,25 @@ class AbstractStudentService(
     override fun createStudent(studentInput: StudentInput): StudentResult? {
         val entity = studentMapper.studentInputToStudent(studentInput)
 
-
-        val user = studentInput.userId?.let {
-            userRepository.findById(it)
-                .orElseThrow { NoSuchElementException("User not found") }
+        val user = studentInput.user?.id?.let {
+            userRepository.findById(it).orElseThrow { NoSuchElementException("User not found") }
         }
+
         if (user != null) {
             entity.user = user
         }
 
-        return studentMapper.studentToStudentResult(
-            studentRepository.save(entity)
+        val savedStudent = studentRepository.save(entity)
+
+        val newStreak = Streak(
+            days = 0,
+            bestStreak = 0,
+            lastActivity = Date(0),
+            student = savedStudent
         )
+        streakRepository.save(newStreak)
+
+        return studentMapper.studentToStudentResult(savedStudent)
     }
 
     @Throws(NoSuchElementException::class)
