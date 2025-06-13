@@ -21,7 +21,7 @@ object AIResponseConfiguration {
                 - Mantén un tono profesional, cordial y realista.
                 - Evita dar opiniones o evaluar respuestas.
 
-                Comienza con una pregunta introductoria general.
+                Comienza con una pregunta introductoria general, devuelve solo el JSON:
             """.trimIndent()
 
             "conductual" -> """
@@ -42,7 +42,7 @@ object AIResponseConfiguration {
                 - No salgas del rol de entrevistador.
                 - Redirige al usuario si responde fuera de tema.
 
-                Comienza con una pregunta sobre una experiencia pasada relacionada con competencias blandas.
+                Comienza con una pregunta sobre una experiencia pasada relacionada con competencias blandas, devuelve solo el JSON:
             """.trimIndent()
 
             "tecnica", "" -> """
@@ -62,7 +62,7 @@ object AIResponseConfiguration {
                 - Mantén un tono profesional, objetivo y directo.
                 - No digas que eres una IA.
 
-                Comienza inmediatamente con la primera pregunta técnica más relevante.
+                Comienza inmediatamente con la primera pregunta técnica más relevante, devuelve solo el JSON:
             """.trimIndent()
 
             else -> "El tipo de entrevista \"$typeOfInterview\" no es válido."
@@ -113,7 +113,7 @@ object AIResponseConfiguration {
 
     fun getEvaluationPrompt(question: MultipleChoiceQuestion, selectedOption: String): String {
         return """
-            Eres un evaluador automático. Devuelve ÚNICAMENTE el siguiente JSON, sin texto adicional:
+            Eres un evaluador automático. Devuelve ÚNICAMENTE el siguiente JSON, sin texto no valido para json:
             {
               "question": "...",
               "selectedOption": "...",
@@ -147,7 +147,7 @@ object AIResponseConfiguration {
         - "Rechazado" → si el desempeño fue muy débil.
         - "Considerar para otra entrevista" → si mostró potencial pero se requiere más información.
 
-        Evalúa la siguiente entrevista:
+        Evalúa la siguiente entrevista ydevuelve solo el JSON::
         $transcript
     """.trimIndent()
     }
