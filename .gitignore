@@ -1,9 +1,12 @@
 HELP.md
+
+### Gradle ###
 .gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+/build/
+/target/
+/out/
+/.mvn/
+/!gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###
 .apt_generated
@@ -13,18 +16,17 @@ build/
 .settings
 .springBeans
 .sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+/bin/
+/!**/src/main/**/bin/
+/!**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+/!**/src/main/**/out/
+/!**/src/test/**/out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -39,8 +41,22 @@ out/
 ### Kotlin ###
 .kotlin
 
-.idea/
+### Logs y temporales ###
+*.log
+*.tmp
+*.lock
+*.swp
+*.swo
+.DS_Store
 
+### Uploads y archivos de usuario ###
+/uploads/
+/curriculums/
+/*.pdf
+
+### Archivos de configuración sensibles ###
+application-*.properties
+application-*.yml
+application-*.yaml
 local.properties
-/uploads/curriculums/Mari_ngel_Avenda_o_-_CV.pdf
-/uploads/curriculums/Mariángel Avendaño - CV.pdf
+!application-*.example.properties
