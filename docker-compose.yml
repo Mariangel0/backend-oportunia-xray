@@ -1,18 +1,14 @@
-
-
 services:
   db:
     image: postgres
     container_name: database
     restart: always
     environment:
-    - POSTGRES_USER=${POSTGRES_USER}
-    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - '5432:5432'
-
-
 
   app:
     image: openjdk:17-jdk-slim
@@ -24,9 +20,9 @@ services:
     working_dir: /app
     command: java -jar OportuniaBackend-0.0.1-SNAPSHOT.jar
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/oportunia
-      - SPRING_DATASOURCE_USERNAME=oportunia
-      - SPRING_DATASOURCE_PASSWORD=12345
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
     depends_on:
       - db
