@@ -56,7 +56,7 @@ HELP.md
 
 ### Archivos de configuración sensibles ###
 application-*.properties
-application-*.yml
 application-*.yaml
 local.properties
 !application-*.example.properties
+.env
